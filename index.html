@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Cycleless AI-интегратор, ломающий порочные циклы</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #0a0c0f;
+        font-family:
+          "Inter",
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          Helvetica,
+          sans-serif;
+        color: #eef2f5;
+        line-height: 1.4;
+        scroll-behavior: smooth;
+      }
+
+      /* Custom gradients and glassmorphism */
+      .glass {
+        background: rgba(18, 22, 28, 0.7);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      }
+
+      .gradient-text {
+        background: linear-gradient(135deg, #38bdf8 0%, #a78bfa 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .btn-primary {
+        background: linear-gradient(105deg, #1e2a3a 0%, #0f172a 100%);
+        border: 1px solid rgba(56, 189, 248, 0.5);
+        transition: all 0.2s ease;
+        font-weight: 500;
+      }
+      .btn-primary:hover {
+        border-color: #38bdf8;
+        background: linear-gradient(105deg, #2d3a4a 0%, #1e293b 100%);
+        box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 1px solid #334155;
+        transition: all 0.2s ease;
+      }
+      .btn-outline:hover {
+        border-color: #38bdf8;
+        background: rgba(56, 189, 248, 0.05);
+        transform: translateY(-2px);
+      }
+
+      .card-hover {
+        transition: all 0.25s ease;
+        background: rgba(21, 26, 32, 0.7);
+        backdrop-filter: blur(4px);
+        border: 1px solid #1e2a3a;
+      }
+      .card-hover:hover {
+        border-color: #38bdf8;
+        transform: translateY(-6px);
+        box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.5);
+        background: rgba(28, 34, 42, 0.8);
+      }
+
+      section {
+        padding: 5rem 1.5rem;
+      }
+      .container {
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+
+      @media (max-width: 768px) {
+        section {
+          padding: 3rem 1.25rem;
+        }
+        h1 {
+          font-size: 2.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav
+      class="glass"
+      style="position: sticky; top: 0; z-index: 50; padding: 1rem 1.5rem"
+    >
+      <div
+        class="container"
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 1rem;
+        "
+      >
+        <div
+          style="font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em"
+        >
+          <span class="gradient-text">Cycleless</span>
+        </div>
+        <div
+          style="display: flex; gap: 1.8rem; flex-wrap: wrap; font-weight: 500"
+        >
+          <a
+            href="#products"
+            style="
+              text-decoration: none;
+              color: #cbd5e1;
+              transition: color 0.2s;
+            "
+            >Продукты</a
+          >
+          <a
+            href="#partners"
+            style="
+              text-decoration: none;
+              color: #cbd5e1;
+              transition: color 0.2s;
+            "
+            >Партнёрам</a
+          >
+          <a
+            href="#cases"
+            style="
+              text-decoration: none;
+              color: #cbd5e1;
+              transition: color 0.2s;
+            "
+            >Кейсы</a
+          >
+        </div>
+        <div>
+          <a
+            href="#contact"
+            class="btn-primary"
+            style="
+              padding: 0.6rem 1.3rem;
+              border-radius: 40px;
+              text-decoration: none;
+              color: white;
+              font-size: 0.9rem;
+            "
+            >Начать диалог</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <section style="padding-top: 4rem; padding-bottom: 3rem">
+      <div class="container">
+        <div style="max-width: 880px; margin: 0 auto; text-align: center">
+          <div style="margin-bottom: 1.5rem">
+            <span
+              style="
+                background: #1e293b;
+                border-radius: 100px;
+                padding: 0.3rem 1rem;
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: #94a3b8;
+              "
+              >AI-интегратор нового поколения</span
+            >
+          </div>
+          <h1
+            style="
+              font-size: 3.8rem;
+              font-weight: 800;
+              letter-spacing: -0.02em;
+              line-height: 1.2;
+              margin-bottom: 1.2rem;
+            "
+          >
+            Выходим из <span class="gradient-text">порочного круга</span> ручной
+            работы
+          </h1>
+          <p
+            style="
+              font-size: 1.3rem;
+              color: #9ca3af;
+              max-width: 720px;
+              margin: 0 auto 2rem auto;
+            "
+          >
+            Cycleless AI-интегратор для бизнеса. Находим, где вы теряете деньги,
+            и ставим автоматизацию, которая возвращает их в кассу. Модульная
+            архитектура, предсказуемые цены, ответственность за ROI.
+          </p>
+          <div
+            style="
+              display: flex;
+              gap: 1rem;
+              justify-content: center;
+              flex-wrap: wrap;
+            "
+          >
+            <a
+              href="#products"
+              class="btn-primary"
+              style="
+                padding: 0.9rem 2rem;
+                border-radius: 48px;
+                text-decoration: none;
+                font-weight: 600;
+              "
+              >🔍 Исследовать решения</a
+            >
+            <a
+              href="#contact"
+              class="btn-outline"
+              style="
+                padding: 0.9rem 2rem;
+                border-radius: 48px;
+                text-decoration: none;
+                font-weight: 600;
+              "
+              >💬 Стать партнёром</a
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div
+      style="
+        border-top: 1px solid #1e2a3a;
+        border-bottom: 1px solid #1e2a3a;
+        background: #0f1115;
+        padding: 1.8rem 1rem;
+      "
+    >
+      <div
+        class="container"
+        style="
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 1.8rem;
+          text-align: center;
+        "
+      >
+        <div>
+          <strong style="font-size: 1.8rem; color: #38bdf8">14</strong
+          ><span style="display: block; color: #94a3b8"
+            >дней до первого ROI</span
+          >
+        </div>
+        <div>
+          <strong style="font-size: 1.8rem; color: #38bdf8">0</strong
+          ><span style="display: block; color: #94a3b8">CAPEX-ловушек</span>
+        </div>
+        <div>
+          <strong style="font-size: 1.8rem; color: #38bdf8">100%</strong
+          ><span style="display: block; color: #94a3b8"
+            >гарантия интеграции</span
+          >
+        </div>
+        <div>
+          <strong style="font-size: 1.8rem; color: #38bdf8">24/7</strong
+          ><span style="display: block; color: #94a3b8"
+            >AI-агенты без перерывов</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <section id="products">
+      <div class="container">
+        <div style="text-align: center; margin-bottom: 3rem">
+          <h2 style="font-size: 2.2rem; font-weight: 700">
+            ⚙️ Продукты модули, которые приносят деньги
+          </h2>
+          <p style="color: #9ca3af; margin-top: 0.8rem">
+            Выбираете «ядро» точку прокола, где проще всего достать живую
+            прибыль.
+          </p>
+        </div>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+          "
+        >
+          <div class="card-hover" style="border-radius: 32px; padding: 1.8rem">
+            <div style="font-size: 2.2rem; margin-bottom: 1rem">🔄</div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.6rem">
+              CRM-Реаниматор
+            </h3>
+            <p style="color: #cbd5e1">
+              Выход из цикла "лид пришёл и сгорел". Достаём деньги из базы,
+              которую вы считали мёртвой. Окупаемость от 3 недель.
+            </p>
+          </div>
+          <div class="card-hover" style="border-radius: 32px; padding: 1.8rem">
+            <div style="font-size: 2.2rem; margin-bottom: 1rem">🔬</div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.6rem">Tech X-Ray</h3>
+            <p style="color: #cbd5e1">
+              Аудит инфраструктуры: находим скрытые утечки бюджета (от
+              500к/мес). Гарантия возврата или фикс за наш счёт.
+            </p>
+          </div>
+          <div class="card-hover" style="border-radius: 32px; padding: 1.8rem">
+            <div style="font-size: 2.2rem; margin-bottom: 1rem">🤖</div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.6rem">
+              Ключевое действие
+            </h3>
+            <p style="color: #cbd5e1">
+              Бот-конвертер: не отпускает клиента без покупки/звонка. Выход из
+              цикла "зашёл и ушёл".
+            </p>
+          </div>
+          <div class="card-hover" style="border-radius: 32px; padding: 1.8rem">
+            <div style="font-size: 2.2rem; margin-bottom: 1rem">📂</div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.6rem">
+              Chaos Classifier
+            </h3>
+            <p style="color: #cbd5e1">
+              Структурируем цифровой мусор, хаос документов → чистая база.
+              Экономия десятков человеко-часов ежедневно.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="partners" style="background: #0c0f13">
+      <div class="container">
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            align-items: center;
+          "
+        >
+          <div>
+            <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem">
+              🤝 Станьте партнёром <span class="gradient-text">Cycleless</span>
+            </h2>
+            <p style="color: #cbd5e1; margin-bottom: 1.2rem">
+              Для системных интеграторов, агентств и технологических компаний.
+              Вместе внедряем AI-решения бизнесу любого масштаба.
+            </p>
+            <ul style="list-style: none; margin-bottom: 1.8rem">
+              <li style="margin-bottom: 0.6rem">
+                ✓ Маржинальные условия и совместный SLA
+              </li>
+              <li style="margin-bottom: 0.6rem">
+                ✓ Техническая экспертиза 24/7 под вашим брендом
+              </li>
+              <li style="margin-bottom: 0.6rem">
+                ✓ Модульный каталог: от быстрых внедрений до Enterprise-кейсов
+              </li>
+            </ul>
+            <a
+              href="#contact"
+              class="btn-primary"
+              style="
+                padding: 0.7rem 1.6rem;
+                border-radius: 40px;
+                text-decoration: none;
+                display: inline-block;
+              "
+              >Стать партнёром</a
+            >
+          </div>
+          <div
+            style="
+              background: linear-gradient(145deg, #11161f, #090c10);
+              border-radius: 32px;
+              padding: 2rem;
+              border: 1px solid #1e2a3a;
+            "
+          >
+            <p style="font-style: italic; color: #94a3b8">
+              «Cycleless помогли нам выйти на новый уровень интеграция заняла 11
+              дней, а возврат инвестиций мы увидели уже через месяц. Ребята
+              реально ломают циклы»
+            </p>
+            <p style="margin-top: 1rem; font-weight: 600">
+              Андрей, CEO «ТехноЛогика»
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cases">
+      <div class="container">
+        <div style="text-align: center; margin-bottom: 2.5rem">
+          <h2 style="font-size: 2rem; font-weight: 700">
+            📌 Кейсы цифры, а не презентации
+          </h2>
+          <p style="color: #9ca3af">
+            Результаты, которые мы фиксируем в договоре
+          </p>
+        </div>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+          "
+        >
+          <div
+            style="
+              border-radius: 28px;
+              background: #11151c;
+              padding: 1.5rem;
+              border: 1px solid #1e293b;
+            "
+          >
+            <div style="font-size: 2rem">🏭</div>
+            <h3 style="margin: 0.8rem 0 0.5rem">Сеть складов PERO</h3>
+            <p style="color: #94a3b8">
+              Tech X-Ray + Chaos Classifier: сократили операционные издержки на
+              <strong>28%</strong>, обработали 140k документов за 3 дня.
+            </p>
+          </div>
+          <div
+            style="
+              border-radius: 28px;
+              background: #11151c;
+              padding: 1.5rem;
+              border: 1px solid #1e293b;
+            "
+          >
+            <div style="font-size: 2rem">🏦</div>
+            <h3 style="margin: 0.8rem 0 0.5rem">Финансовый холдинг</h3>
+            <p style="color: #94a3b8">
+              CRM-Реаниматор: возврат 670 «спящих» лидов за месяц,
+              дополнительная выручка <strong>4,2 млн₽</strong>.
+            </p>
+          </div>
+          <div
+            style="
+              border-radius: 28px;
+              background: #11151c;
+              padding: 1.5rem;
+              border: 1px solid #1e293b;
+            "
+          >
+            <div style="font-size: 2rem">🚚</div>
+            <h3 style="margin: 0.8rem 0 0.5rem">Логистический оператор</h3>
+            <p style="color: #94a3b8">
+              Внедрили «Ключевое действие» в колл-центр: конверсия в заявку
+              +<strong>41%</strong>, отказников стало в 2 раза меньше.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="contact"
+      style="background: radial-gradient(circle at 10% 30%, #0f172a, #020617)"
+    >
+      <div class="container" style="text-align: center">
+        <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem">
+          Начнём ломать ваши бизнес-циклы?
+        </h2>
+        <p style="color: #9ca3af; max-width: 560px; margin: 0 auto 1.8rem auto">
+          Заполните форму или напишите нам за 1 день подготовим прототип
+          окупаемой автоматизации.
+        </p>
+        <div
+          style="
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+          "
+        >
+          <a
+            href="#"
+            class="btn-primary"
+            style="
+              padding: 0.9rem 2rem;
+              border-radius: 48px;
+              text-decoration: none;
+            "
+            >📧 Запросить коммерческое предложение</a
+          >
+          <a
+            href="#"
+            class="btn-outline"
+            style="
+              padding: 0.9rem 2rem;
+              border-radius: 48px;
+              text-decoration: none;
+            "
+            >📞 Заказать аудит X-Ray</a
+          >
+        </div>
+        <p style="margin-top: 2rem; font-size: 0.8rem; color: #4b5563">
+          Cycleless AI-интегратор. Выход из порочного круга ручной работы.
+        </p>
+      </div>
+    </section>
+
+    <footer
+      style="
+        border-top: 1px solid #1e2a3a;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        color: #6c757d;
+        font-size: 0.8rem;
+      "
+    >
+      <p>
+        Cycleless решаем нерешаемое автоматизациями и оптимизациями. Все права
+        защищены.
+      </p>
+      <p style="margin-top: 0.5rem">
+        <a href="#" style="color: #6c757d; text-decoration: none"
+          >Политика конфиденциальности</a
+        >
+        |
+        <a href="#" style="color: #6c757d; text-decoration: none"
+          >Договор оферты</a
+        >
+      </p>
+    </footer>
+  </body>
+</html>
