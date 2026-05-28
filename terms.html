@@ -1,0 +1,72 @@
+
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Cycleless - Условия использования</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin:0; padding:0; box-sizing: border-box; }
+    body { background: #0a0c0f; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif; color: #eef2f5; line-height: 1.45; scroll-behavior: smooth; }
+    .container { max-width: 1280px; margin: 0 auto; }
+    .card { background: rgba(21, 26, 32, 0.7); backdrop-filter: blur(4px); border: 1px solid #1e2a3a; border-radius: 28px; transition: all 0.25s ease; }
+    .btn-primary { background: linear-gradient(105deg, #1e2a3a 0%, #0f172a 100%); border: 1px solid rgba(212, 255, 51, 0.6); transition: all 0.2s ease; font-weight: 500; cursor: pointer; display: inline-block; text-align: center; text-decoration: none; color: #eef2f5; }
+    .btn-primary:hover { border-color: #d4ff33; background: linear-gradient(105deg, #2d3a4a 0%, #1e293b 100%); box-shadow: 0 0 12px rgba(212, 255, 51, 0.2); transform: translateY(-2px); }
+    .gradient-text { background: linear-gradient(135deg, #d4ff33 0%, #a78bfa 100%); background-clip: text; -webkit-background-clip: text; color: transparent; }
+    .border-l-accent { border-left: 2px solid #d4ff33; }
+    .text-accent { color: #d4ff33; }
+    .uppercase { text-transform: uppercase; }
+    .font-mono { font-family: 'Fira Code', 'Courier New', monospace; }
+    .text-xs { font-size: 0.75rem; }
+    .text-sm { font-size: 0.875rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mt-12 { margin-top: 3rem; }
+    .pl-4 { padding-left: 1rem; }
+    .p-8 { padding: 2rem; }
+    .pt-24 { padding-top: 6rem; }
+    .max-w-3xl { max-width: 48rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .w-fit { width: fit-content; }
+    .px-8 { padding-left: 2rem; padding-right: 2rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .rounded-full { border-radius: 9999px; }
+    .space-y-6 > * + * { margin-top: 1.5rem; }
+    .leading-relaxed { line-height: 1.625; }
+    .opacity-90 { opacity: 0.9; }
+    .text-2xl { font-size: 1.5rem; font-weight: 700; }
+    @media (max-width: 768px) { .p-8 { padding: 1rem; } .pt-24 { padding-top: 4rem; } .text-2xl { font-size: 1.25rem; } }
+  </style>
+</head>
+<body class="p-8 pt-24">
+  <div class="container max-w-3xl mx-auto card p-8" style="border-color: rgba(212, 255, 51, 0.2);">
+    <h1 class="text-2xl mb-8" style="font-weight: 800;">Условия использования (Terms of Service)</h1>
+    <div class="space-y-6 text-sm leading-relaxed opacity-90">
+      <div class="border-l-accent pl-4">
+        <p class="font-mono text-xs uppercase text-accent mb-2">[1. СОГЛАСИЕ С УСЛОВИЯМИ]</p>
+        <p>Используя данный ресурс, вы подтверждаете полное и безоговорочное согласие с данными условиями. Если вы не согласны с любым из пунктов, немедленно прекратите использование системы.</p>
+      </div>
+      <div class="border-l-accent pl-4">
+        <p class="font-mono text-xs uppercase text-accent mb-2">[2. ИНТЕЛЛЕКТУАЛЬНАЯ СОБСТВЕННОСТЬ]</p>
+        <p>Все математические модели, алгоритмы оптимизации (O(1)), кастомные ядра на C++/Rust и архитектурные решения являются исключительной собственностью CYCLELESS. Любое копирование или реверс-инжиниринг преследуется по закону.</p>
+      </div>
+      <div class="border-l-accent pl-4">
+        <p class="font-mono text-xs uppercase text-accent mb-2">[3. ОТКАЗ ОТ ГАРАНТИЙ]</p>
+        <p>Услуги предоставляются по принципу "как есть" (as is). Мы не несем ответственности за косвенные убытки, возникшие в результате внедрения предложенных оптимизаций, если иное не закреплено в отдельном SLA документе.</p>
+      </div>
+      <div class="border-l-accent pl-4">
+        <p class="font-mono text-xs uppercase text-accent mb-2">[4. ОГРАНИЧЕНИЕ ИСПОЛЬЗОВАНИЯ]</p>
+        <p>Запрещается: использование автоматизированных систем (скрейперов) для извлечения данных, попытки дестабилизации инфраструктуры, использование R&D отчетов для создания конкурирующих решений в течение 24 месяцев после аудита.</p>
+      </div>
+      <div class="border-l-accent pl-4">
+        <p class="font-mono text-xs uppercase text-accent mb-2">[5. ПРИМЕНИМОЕ ПРАВО]</p>
+        <p>Все споры подлежат разрешению в соответствии с законодательством по месту регистрации Оператора. Арбитраж является приоритетной формой урегулирования конфликтов.</p>
+      </div>
+    </div>
+    <button onclick="window.history.back()" class="btn-primary mt-12 w-fit px-8 py-3 rounded-full font-mono text-xs" style="background: linear-gradient(105deg, #1e2a3a 0%, #0f172a 100%); border: 1px solid rgba(212, 255, 51, 0.6); cursor: pointer;">
+      RETURN_TO_SYSTEM
+    </button>
+  </div>
+</body>
+</html>
