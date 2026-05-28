@@ -666,57 +666,56 @@
     <div class="sh sh-c">
       <div class="lbl"><span>Калькулятор</span></div>
       <h2>Рассчитайте <span class="g">стоимость</span></h2>
-      <p>Выберите ядро и модули — рассчитаем примерную цену внедрения и ежемесячный платёж</p>
+      <p>Выберите одно ядро и несколько модулей — цена обновится автоматически</p>
     </div>
-    <div class="calc-panel">
-      <div class="calc-g">
-        <div class="calc-in">
-          <div class="field">
-            <label>Ядро (Core)</label>
-            <select id="coreSelect">
-              <option value="0">— не выбрано —</option>
-              <option value="light_crm">CRM-Реаниматор Light · 150k разово</option>
-              <option value="std_crm">CRM-Реаниматор Стандарт · 150k + 20k/мес</option>
-              <option value="light_xray">Tech X-Ray Light · 50k</option>
-              <option value="std_xray">Tech X-Ray Стандарт · 150k</option>
-              <option value="light_chaos">Chaos Classifier Light · 0 + 45k/мес</option>
-              <option value="std_chaos">Chaos Classifier Стандарт · 80k + 25k/мес</option>
-              <option value="light_nom">Номенклатура Light · 30k + 35k/мес</option>
-              <option value="std_nom">Номенклатура Стандарт · 80k + 25k/мес</option>
-              <option value="light_key">Ключевое действие Light · 0 + 40k/мес</option>
-              <option value="std_key">Ключевое действие Стандарт · 100k + 25k/мес</option>
-            </select>
+    <div class="calc-panel" style="padding: 1.5rem">
+      <div class="calc-g" style="gap: 2rem">
+        <div class="calc-in" style="padding: 0; border: none">
+          <div class="field" style="margin-bottom: 2rem">
+            <label style="display: block; margin-bottom: 1rem">⚛️ Ядро (выберите одно)</label>
+            <div id="coreRadios" style="display: flex; flex-direction: column; gap: 0.75rem">
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_crm"> <span><strong>CRM-Реаниматор Light</strong> — 150 000 ₽ разово</span></label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_crm"> <span><strong>CRM-Реаниматор Стандарт</strong> — 150 000 ₽ + 20 000 ₽/мес</span></label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_xray"> <span><strong>Tech X-Ray Light</strong> — 50 000 ₽ разово</span></label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_xray"> <span><strong>Tech X-Ray Стандарт</strong> — 150 000 ₽ разово</span></label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_chaos"> <span><strong>Chaos Classifier Light</strong> — 0 ₽ + 45 000 ₽/мес</span></label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_chaos"> <span><strong>Chaos Classifier Стандарт</strong> — 80 000 ₽ + 25 000 ₽/мес</span></label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_nom"> <span><strong>Номенклатура Light</strong> — 30 000 ₽ + 35 000 ₽/мес</span></label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_nom"> <span><strong>Номенклатура Стандарт</strong> — 80 000 ₽ + 25 000 ₽/мес</span></label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_key"> <span><strong>Ключевое действие Light</strong> — 0 ₽ + 40 000 ₽/мес</span></label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_key"> <span><strong>Ключевое действие Стандарт</strong> — 100 000 ₽ + 25 000 ₽/мес</span></label>
+            </div>
           </div>
           <div class="field">
-            <label>Модули — Ctrl/Cmd для мультивыбора</label>
-            <select id="modulesSelect" multiple size="8">
-              <option value="ai_calls">AI-Звонки · 60k + 30k/мес</option>
-              <option value="voice_ai">Голосовой ИИ · 40k + 20k/мес</option>
-              <option value="docflow">Документооборот · 80k + 35k/мес</option>
-              <option value="parsing_web">Парсинг интернета · 50k + 25k/мес</option>
-              <option value="parsing_comp">Парсинг конкурентов · 100k + 50k/мес</option>
-              <option value="video_gen">Генерация видео · 70k + 40k/мес</option>
-              <option value="photo_gen">Генерация фото · 40k + 20k/мес</option>
-              <option value="ai_check">AI-Проверки · 80k + 45k/мес</option>
-              <option value="omni">Мессенджеры Omni · 100k + 50k/мес</option>
-              <option value="calendar">Календари · 30k + 15k/мес</option>
-            </select>
+            <label style="display: block; margin-bottom: 1rem">🧩 Модули (выберите несколько)</label>
+            <div id="modulesChecks" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.75rem">
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="ai_calls"> AI-Звонки · 60k + 30k/мес</label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="voice_ai"> Голосовой ИИ · 40k + 20k/мес</label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="docflow"> Документооборот · 80k + 35k/мес</label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="parsing_web"> Парсинг интернета · 50k + 25k/мес</label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="parsing_comp"> Парсинг конкурентов · 100k + 50k/мес</label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="video_gen"> Генерация видео · 70k + 40k/мес</label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="photo_gen"> Генерация фото · 40k + 20k/мес</label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="ai_check"> AI-Проверки · 80k + 45k/мес</label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="omni"> Мессенджеры Omni · 100k + 50k/мес</label>
+              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="calendar"> Календари · 30k + 15k/мес</label>
+            </div>
           </div>
         </div>
-        <div class="calc-out">
-          <div style="margin-bottom:1.5rem">
+        <div class="calc-out" style="background: var(--bg-2); border-radius: var(--rl); padding: 1.5rem">
+          <div style="margin-bottom: 1.5rem">
             <div class="p-lbl">Сетап (разово)</div>
-            <div class="p-val" id="setupPrice">0 ₽</div>
+            <div class="p-val" id="setupPrice" style="font-size: 2rem">0 ₽</div>
           </div>
-          <div class="divider"></div>
-          <div style="margin-bottom:1.5rem">
+          <div class="divider" style="margin: 1rem 0"></div>
+          <div style="margin-bottom: 1.5rem">
             <div class="p-lbl">Ежемесячный SLA</div>
-            <div class="p-val" id="monthlyPrice">0 ₽</div>
-            <div class="p-bonus" id="bonusNote"><i class="fas fa-gift" style="margin-right:.4rem"></i>Первый месяц SLA бесплатно</div>
+            <div class="p-val" id="monthlyPrice" style="font-size: 2rem">0 ₽</div>
+            <div class="p-bonus" id="bonusNote" style="display: none; margin-top: 0.5rem"><i class="fas fa-gift"></i> Первый месяц SLA бесплатно</div>
           </div>
-          <div class="divider"></div>
-          <p class="calc-hint">Скидки применяются автоматически: 1 модуль → −20%, 2+ модуля → −15% на сетап. Ядро + 3+ модуля → первый месяц SLA бесплатно.</p>
-          <a href="https://t.me/cycleless" target="_blank" class="btn btn-p" style="width:100%;justify-content:center">
+          <div class="divider" style="margin: 1rem 0"></div>
+          <p class="calc-hint" style="margin: 1rem 0; font-size: 0.75rem">Скидки: 1 модуль → −20% на сетап модуля, 2+ модуля → −15% на сетап каждого. Ядро + 3+ модуля → первый месяц SLA бесплатно.</p>
+          <a href="https://t.me/cycleless" target="_blank" class="btn btn-p" style="width:100%; justify-content:center; margin-top: 0.5rem">
             <i class="fab fa-telegram"></i> Точный расчёт в Telegram
           </a>
         </div>
@@ -748,20 +747,34 @@ const coreMap={light_crm:{setup:150000,monthly:0},std_crm:{setup:150000,monthly:
 const modMap={ai_calls:{setup:60000,monthly:30000},voice_ai:{setup:40000,monthly:20000},docflow:{setup:80000,monthly:35000},parsing_web:{setup:50000,monthly:25000},parsing_comp:{setup:100000,monthly:50000},video_gen:{setup:70000,monthly:40000},photo_gen:{setup:40000,monthly:20000},ai_check:{setup:80000,monthly:45000},omni:{setup:100000,monthly:50000},calendar:{setup:30000,monthly:15000}};
 function fmt(n){return n.toLocaleString('ru-RU')+' ₽'}
 function calc(){
-  const ck=document.getElementById('coreSelect').value;
-  const core=ck!=='0'?coreMap[ck]:{setup:0,monthly:0};
-  const sel=Array.from(document.getElementById('modulesSelect').selectedOptions).map(o=>o.value);
-  const mods=sel.map(m=>modMap[m]);
+  // выбранное ядро (radio)
+  let coreVal=null;
+  const radioSelected=document.querySelector('input[name="core"]:checked');
+  if(radioSelected) coreVal=radioSelected.value;
+  const core=coreVal && coreMap[coreVal] ? coreMap[coreVal] : {setup:0,monthly:0};
+  
+  // выбранные модули (checkbox)
+  const mods=[];
+  document.querySelectorAll('#modulesChecks input[type="checkbox"]:checked').forEach(cb=>{
+    if(modMap[cb.value]) mods.push(modMap[cb.value]);
+  });
   const n=mods.length;
-  const disc=n===1?.2:n>=2?.15:0;
+  const disc=n===1?0.2:(n>=2?0.15:0);
   let ts=core.setup,tm=core.monthly;
-  for(const m of mods){ts+=Math.floor(m.setup*(1-disc));tm+=m.monthly}
+  for(const m of mods){
+    ts+=Math.floor(m.setup*(1-disc));
+    tm+=m.monthly;
+  }
   document.getElementById('setupPrice').textContent=fmt(ts);
   document.getElementById('monthlyPrice').textContent=fmt(tm);
-  document.getElementById('bonusNote').style.display=(ck!=='0'&&n>=3)?'block':'none';
+  const bonusNote=document.getElementById('bonusNote');
+  if(coreVal && n>=3) bonusNote.style.display='block';
+  else bonusNote.style.display='none';
 }
-document.getElementById('coreSelect').addEventListener('change',calc);
-document.getElementById('modulesSelect').addEventListener('change',calc);
+// слушаем изменения на всех радио и чекбоксах
+document.querySelectorAll('input[name="core"], #modulesChecks input[type="checkbox"]').forEach(el=>{
+  el.addEventListener('change',calc);
+});
 calc();
 </script>
 </body>
