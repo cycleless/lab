@@ -1,759 +1,1522 @@
-
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Cycleless — AI-интегратор. Ломаем порочные циклы бизнеса</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --accent: #d4ff33;
-      --accent-dim: rgba(212,255,51,0.1);
-      --accent-border: rgba(212,255,51,0.25);
-      --bg:    #07080a;
-      --bg-2:  #0c0f13;
-      --bg-3:  #111620;
-      --border: rgba(255,255,255,0.06);
-      --text:  #dde4ec;
-      --muted: #5a6a7a;
-      --dim:   #2e3a48;
-      --font-d: 'Syne', sans-serif;
-      --font-b: 'DM Sans', sans-serif;
-      --font-m: 'JetBrains Mono', monospace;
-      --r: 16px; --rl: 24px; --rs: 8px;
-    }
-    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{background:var(--bg);font-family:var(--font-b);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
-    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(212,255,51,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(212,255,51,.025) 1px,transparent 1px);background-size:64px 64px;pointer-events:none;z-index:0}
-    .container{max-width:1200px;margin:0 auto;padding:0 1.5rem;position:relative}
-    section{padding:5rem 1.5rem;position:relative}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Cycleless — AI-интегратор. Ломаем порочные циклы бизнеса</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --accent: #d4ff33;
+            --accent-dim: rgba(212, 255, 51, 0.1);
+            --accent-border: rgba(212, 255, 51, 0.25);
+            --bg: #07080a;
+            --bg-2: #0c0f13;
+            --bg-3: #111620;
+            --border: rgba(255, 255, 255, 0.06);
+            --text: #dde4ec;
+            --muted: #5a6a7a;
+            --dim: #2e3a48;
+            --font-d: 'Syne', sans-serif;
+            --font-b: 'DM Sans', sans-serif;
+            --font-m: 'JetBrains Mono', monospace;
+            --r: 16px;
+            --rl: 24px;
+            --rs: 8px;
+        }
 
-    /* GRADIENT TEXT */
-    .g{background:linear-gradient(135deg,var(--accent) 0%,#a78bfa 55%,#38bdf8 100%);background-clip:text;-webkit-background-clip:text;color:transparent}
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
 
-    /* LABEL */
-    .lbl{font-family:var(--font-m);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:.5rem}
-    .lbl::before{content:'//';opacity:.45}
+        html {
+            scroll-behavior: smooth
+        }
 
-    /* NAV */
-    nav{position:sticky;top:0;z-index:100;background:rgba(7,8,10,.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
-    .nav-i{display:flex;align-items:center;justify-content:space-between;padding:.95rem 1.5rem;max-width:1200px;margin:0 auto;flex-wrap:wrap;gap:1rem}
-    .logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
-    .logo-m{width:34px;height:34px;background:var(--bg-3);border:1px solid var(--accent-border);border-radius:8px;display:flex;align-items:center;justify-content:center}
-    .logo-t{font-family:var(--font-d);font-size:1.35rem;font-weight:700;color:var(--text);letter-spacing:-.02em}
-    .logo-t span{color:var(--accent)}
-    .nav-links{display:flex;align-items:center;gap:.15rem;flex-wrap:wrap}
-    .nav-a{font-size:.85rem;color:var(--muted);text-decoration:none;padding:.4rem .85rem;border-radius:40px;transition:all .15s}
-    .nav-a:hover{color:var(--text);background:rgba(255,255,255,.05)}
-    .nav-cta{display:flex;align-items:center;gap:.45rem;background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);font-family:var(--font-m);font-size:.72rem;letter-spacing:.05em;text-decoration:none;padding:.45rem 1.1rem;border-radius:40px;transition:all .2s}
-    .nav-cta:hover{background:rgba(212,255,51,.2);border-color:var(--accent);box-shadow:0 0 16px rgba(212,255,51,.15)}
+        body {
+            background: var(--bg);
+            font-family: var(--font-b);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased
+        }
 
-    /* BUTTONS */
-    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.75rem;border-radius:40px;font-family:var(--font-b);font-size:.9rem;font-weight:500;text-decoration:none;cursor:pointer;border:none;transition:all .2s ease}
-    .btn-p{background:var(--accent);color:#07080a;font-weight:600}
-    .btn-p:hover{background:#e8ff66;box-shadow:0 0 24px rgba(212,255,51,.3);transform:translateY(-1px)}
-    .btn-s{background:transparent;color:var(--text);border:1px solid var(--border)}
-    .btn-s:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.04);transform:translateY(-1px)}
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(rgba(212, 255, 51, .025) 1px, transparent 1px), linear-gradient(90deg, rgba(212, 255, 51, .025) 1px, transparent 1px);
+            background-size: 64px 64px;
+            pointer-events: none;
+            z-index: 0
+        }
 
-    /* HERO */
-    .hero{padding:7rem 1.5rem 5rem;text-align:center}
-    .hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--bg-3);border:1px solid var(--accent-border);border-radius:40px;padding:.32rem 1rem;font-family:var(--font-m);font-size:.7rem;color:var(--accent);letter-spacing:.08em;margin-bottom:2.5rem}
-    .hero h1{font-family:var(--font-d);font-size:clamp(2.8rem,7vw,5.5rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:1.5rem}
-    .hero-desc{font-size:1.05rem;color:var(--muted);max-width:600px;margin:0 auto 2.5rem;line-height:1.75}
-    .hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            position: relative
+        }
 
-    /* STATS */
-    .stats-strip{background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-    .stats-g{display:grid;grid-template-columns:repeat(4,1fr);max-width:1200px;margin:0 auto;padding:0 1.5rem}
-    .stat{padding:2rem 1.5rem;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:.7rem}
-    .stat:last-child{border-right:none}
-    .stat-ic{width:36px;height:36px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:.9rem}
-    .stat-l{font-size:.85rem;font-weight:500;color:var(--text)}
-    .stat-v{font-family:var(--font-m);font-size:.72rem;color:var(--muted)}
+        section {
+            padding: 5rem 1.5rem;
+            position: relative
+        }
 
-    /* SECTION HEAD */
-    .sh{margin-bottom:2.75rem}
-    .sh h2{font-family:var(--font-d);font-size:clamp(1.8rem,4vw,2.75rem);font-weight:800;letter-spacing:-.02em;line-height:1.15;margin-top:.65rem}
-    .sh p{font-size:.95rem;color:var(--muted);max-width:600px;margin-top:.65rem;line-height:1.75}
-    .sh-c{text-align:center}
-    .sh-c .lbl{justify-content:center}
-    .sh-c p{margin-left:auto;margin-right:auto}
+        .g {
+            background: linear-gradient(135deg, var(--accent) 0%, #a78bfa 55%, #38bdf8 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent
+        }
 
-    /* BADGES */
-    .badge{display:inline-flex;align-items:center;gap:.4rem;background:var(--bg-3);border:1px solid var(--border);border-radius:6px;padding:.32rem .8rem;font-size:.78rem;color:var(--muted);transition:all .2s}
-    .badge i{color:var(--accent);font-size:.72rem}
-    .badge:hover{border-color:var(--accent-border);color:var(--text)}
-    .badge-grp{display:flex;flex-wrap:wrap;gap:.45rem;margin:.9rem 0}
-    .module-head{font-family:var(--font-m);font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.65rem;display:flex;align-items:center;gap:.5rem}
-    .module-head i{color:var(--accent)}
+        .lbl {
+            font-family: var(--font-m);
+            font-size: .68rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: .5rem
+        }
 
-    /* TABLES */
-    .tw{overflow-x:auto;border-radius:var(--rl);border:1px solid var(--border)}
-    table{width:100%;border-collapse:collapse;background:var(--bg-2)}
-    thead th{background:var(--bg-3);font-family:var(--font-m);font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);padding:.95rem 1.25rem;text-align:left;font-weight:500;border-bottom:1px solid var(--border)}
-    tbody td{padding:.85rem 1.25rem;font-size:.85rem;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top}
-    tbody tr:last-child td{border-bottom:none}
-    tbody tr:hover td{background:rgba(255,255,255,.02)}
-    td:first-child{font-weight:500}
-    .td-n{font-size:.75rem;color:var(--muted);margin-top:.2rem}
-    .hl{color:var(--accent)!important;font-weight:500}
+        .lbl::before {
+            content: '//';
+            opacity: .45
+        }
 
-    /* CARDS */
-    .card{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--rl);padding:1.75rem;transition:all .25s}
-    .card:hover{border-color:rgba(212,255,51,.2);transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.4)}
-    .card-ic{width:42px;height:42px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:11px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:1rem;margin-bottom:1.2rem}
-    .card h3{font-family:var(--font-d);font-size:1.1rem;font-weight:700;margin-bottom:.55rem;letter-spacing:-.01em}
-    .card p{font-size:.85rem;color:var(--muted);line-height:1.65}
-    .card-meta{font-family:var(--font-m);font-size:.7rem;color:var(--accent);margin-top:.95rem;letter-spacing:.04em}
-    .sol-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.5rem}
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(7, 8, 10, .88);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border)
+        }
 
-    /* INFO BOX */
-    .info{background:var(--bg-3);border:1px solid var(--accent-border);border-radius:var(--r);padding:1.2rem 1.5rem;display:flex;align-items:flex-start;gap:.95rem}
-    .info>i{color:var(--accent);margin-top:.15rem;flex-shrink:0}
-    .info p{font-size:.85rem;color:var(--muted);line-height:1.65}
-    .info p strong{color:var(--text)}
+        .nav-i {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .95rem 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 1rem
+        }
 
-    /* ADVANTAGES */
-    .adv-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-top:1.5rem}
-    .adv{display:flex;align-items:flex-start;gap:.7rem;font-size:.85rem}
-    .adv i{color:var(--accent);margin-top:.2rem;flex-shrink:0}
-    .adv strong{color:var(--text);display:block}
-    .adv span{color:var(--muted)}
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            text-decoration: none
+        }
 
-    /* PARTNERS */
-    .part-g{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
-    .part-list{list-style:none;margin-top:1.4rem;display:flex;flex-direction:column;gap:.7rem}
-    .part-list li{display:flex;align-items:center;gap:.7rem;font-size:.88rem;color:var(--muted)}
-    .part-list li i{color:var(--accent)}
-    .test-card{background:var(--bg-3);border:1px solid var(--border);border-left:2px solid var(--accent);border-radius:var(--r);padding:1.75rem}
-    .test-card blockquote{font-size:.9rem;color:var(--muted);line-height:1.75;font-style:italic}
-    .test-meta{margin-top:.95rem;font-family:var(--font-m);font-size:.72rem;color:var(--dim)}
+        .logo-m {
+            width: 34px;
+            height: 34px;
+            background: var(--bg-3);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
 
-    /* CALCULATOR */
-    .calc-panel{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden}
-    .calc-g{display:grid;grid-template-columns:1fr 1fr}
-    .calc-in{padding:2rem;border-right:1px solid var(--border)}
-    .calc-out{padding:2rem;background:var(--bg-3)}
-    .field{margin-bottom:1.5rem}
-    .field label{display:block;font-family:var(--font-m);font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.55rem}
-    select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.6rem 1rem;color:var(--text);font-family:var(--font-b);font-size:.85rem;outline:none;appearance:none;cursor:pointer;transition:border-color .2s}
-    select:focus{border-color:var(--accent-border)}
-    select option{background:#0c0f13}
-    .p-lbl{font-family:var(--font-m);font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem}
-    .p-val{font-family:var(--font-d);font-size:2.4rem;font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,var(--accent),#38bdf8);background-clip:text;-webkit-background-clip:text;color:transparent}
-    .p-note{font-family:var(--font-m);font-size:.7rem;color:var(--muted);margin-top:.35rem;letter-spacing:.03em}
-    .p-bonus{display:none;font-family:var(--font-m);font-size:.7rem;color:var(--accent);margin-top:.4rem;letter-spacing:.04em}
-    .divider{height:1px;background:var(--border);margin:1.5rem 0}
-    .calc-hint{font-family:var(--font-m);font-size:.68rem;color:var(--muted);line-height:1.75;margin-bottom:1.25rem}
+        .logo-t {
+            font-family: var(--font-d);
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -.02em
+        }
 
-    /* FOOTER */
-    footer{border-top:1px solid var(--border);padding:2.5rem 1.5rem}
-    .foot-i{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1.5rem}
-    .foot-links{display:flex;gap:2rem;flex-wrap:wrap;justify-content:center}
-    .foot-links a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .15s;display:flex;align-items:center;gap:.4rem}
-    .foot-links a:hover{color:var(--accent)}
-    .foot-copy{font-family:var(--font-m);font-size:.7rem;color:var(--dim);text-align:center;line-height:1.85;letter-spacing:.03em}
+        .logo-t span {
+            color: var(--accent)
+        }
 
-    /* RESPONSIVE */
-    @media(max-width:900px){.stats-g{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:none}.part-g{grid-template-columns:1fr;gap:2rem}.calc-g{grid-template-columns:1fr}.calc-in{border-right:none;border-bottom:1px solid var(--border)}}
-    @media(max-width:600px){.hero{padding:4rem 1rem 3rem}section{padding:3rem 1rem}.stats-g{grid-template-columns:1fr}.stat{border-right:none;border-bottom:1px solid var(--border)}.nav-links{display:none}}
-  </style>
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: .15rem;
+            flex-wrap: wrap
+        }
+
+        .nav-a {
+            font-size: .85rem;
+            color: var(--muted);
+            text-decoration: none;
+            padding: .4rem .85rem;
+            border-radius: 40px;
+            transition: all .15s
+        }
+
+        .nav-a:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, .05)
+        }
+
+        .nav-cta {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            font-family: var(--font-m);
+            font-size: .72rem;
+            letter-spacing: .05em;
+            text-decoration: none;
+            padding: .45rem 1.1rem;
+            border-radius: 40px;
+            transition: all .2s
+        }
+
+        .nav-cta:hover {
+            background: rgba(212, 255, 51, .2);
+            border-color: var(--accent);
+            box-shadow: 0 0 16px rgba(212, 255, 51, .15)
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .75rem 1.75rem;
+            border-radius: 40px;
+            font-family: var(--font-b);
+            font-size: .9rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all .2s ease
+        }
+
+        .btn-p {
+            background: var(--accent);
+            color: #07080a;
+            font-weight: 600
+        }
+
+        .btn-p:hover {
+            background: #e8ff66;
+            box-shadow: 0 0 24px rgba(212, 255, 51, .3);
+            transform: translateY(-1px)
+        }
+
+        .btn-s {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border)
+        }
+
+        .btn-s:hover {
+            border-color: rgba(255, 255, 255, .2);
+            background: rgba(255, 255, 255, .04);
+            transform: translateY(-1px)
+        }
+
+        .hero {
+            padding: 7rem 1.5rem 5rem;
+            text-align: center
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            background: var(--bg-3);
+            border: 1px solid var(--accent-border);
+            border-radius: 40px;
+            padding: .32rem 1rem;
+            font-family: var(--font-m);
+            font-size: .7rem;
+            color: var(--accent);
+            letter-spacing: .08em;
+            margin-bottom: 2.5rem
+        }
+
+        .hero h1 {
+            font-family: var(--font-d);
+            font-size: clamp(2.8rem, 7vw, 5.5rem);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -.03em;
+            margin-bottom: 1.5rem
+        }
+
+        .hero-desc {
+            font-size: 1.05rem;
+            color: var(--muted);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.75
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap
+        }
+
+        .stats-strip {
+            background: var(--bg-2);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border)
+        }
+
+        .stats-g {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem
+        }
+
+        .stat {
+            padding: 2rem 1.5rem;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: .7rem
+        }
+
+        .stat:last-child {
+            border-right: none
+        }
+
+        .stat-ic {
+            width: 36px;
+            height: 36px;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: .9rem
+        }
+
+        .stat-l {
+            font-size: .85rem;
+            font-weight: 500;
+            color: var(--text)
+        }
+
+        .stat-v {
+            font-family: var(--font-m);
+            font-size: .72rem;
+            color: var(--muted)
+        }
+
+        .sh {
+            margin-bottom: 2.75rem
+        }
+
+        .sh h2 {
+            font-family: var(--font-d);
+            font-size: clamp(1.8rem, 4vw, 2.75rem);
+            font-weight: 800;
+            letter-spacing: -.02em;
+            line-height: 1.15;
+            margin-top: .65rem
+        }
+
+        .sh p {
+            font-size: .95rem;
+            color: var(--muted);
+            max-width: 600px;
+            margin-top: .65rem;
+            line-height: 1.75
+        }
+
+        .sh-c {
+            text-align: center
+        }
+
+        .sh-c .lbl {
+            justify-content: center
+        }
+
+        .sh-c p {
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: .32rem .8rem;
+            font-size: .78rem;
+            color: var(--muted);
+            transition: all .2s
+        }
+
+        .badge i {
+            color: var(--accent);
+            font-size: .72rem
+        }
+
+        .badge:hover {
+            border-color: var(--accent-border);
+            color: var(--text)
+        }
+
+        .badge-grp {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .45rem;
+            margin: .9rem 0
+        }
+
+        .module-head {
+            font-family: var(--font-m);
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--muted);
+            margin-bottom: .65rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem
+        }
+
+        .module-head i {
+            color: var(--accent)
+        }
+
+        .tw {
+            overflow-x: auto;
+            border-radius: var(--rl);
+            border: 1px solid var(--border)
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-2)
+        }
+
+        thead th {
+            background: var(--bg-3);
+            font-family: var(--font-m);
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--accent);
+            padding: .95rem 1.25rem;
+            text-align: left;
+            font-weight: 500;
+            border-bottom: 1px solid var(--border)
+        }
+
+        tbody td {
+            padding: .85rem 1.25rem;
+            font-size: .85rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            vertical-align: top
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none
+        }
+
+        tbody tr:hover td {
+            background: rgba(255, 255, 255, .02)
+        }
+
+        td:first-child {
+            font-weight: 500
+        }
+
+        .td-n {
+            font-size: .75rem;
+            color: var(--muted);
+            margin-top: .2rem
+        }
+
+        .hl {
+            color: var(--accent) !important;
+            font-weight: 500
+        }
+
+        .card {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: var(--rl);
+            padding: 1.75rem;
+            transition: all .25s
+        }
+
+        .card:hover {
+            border-color: rgba(212, 255, 51, .2);
+            transform: translateY(-3px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, .4)
+        }
+
+        .card-ic {
+            width: 42px;
+            height: 42px;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 1rem;
+            margin-bottom: 1.2rem
+        }
+
+        .card h3 {
+            font-family: var(--font-d);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: .55rem;
+            letter-spacing: -.01em
+        }
+
+        .card p {
+            font-size: .85rem;
+            color: var(--muted);
+            line-height: 1.65
+        }
+
+        .card-meta {
+            font-family: var(--font-m);
+            font-size: .7rem;
+            color: var(--accent);
+            margin-top: .95rem;
+            letter-spacing: .04em
+        }
+
+        .sol-g {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 1.5rem
+        }
+
+        .info {
+            background: var(--bg-3);
+            border: 1px solid var(--accent-border);
+            border-radius: var(--r);
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: .95rem
+        }
+
+        .info>i {
+            color: var(--accent);
+            margin-top: .15rem;
+            flex-shrink: 0
+        }
+
+        .info p {
+            font-size: .85rem;
+            color: var(--muted);
+            line-height: 1.65
+        }
+
+        .info p strong {
+            color: var(--text)
+        }
+
+        .adv-g {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem
+        }
+
+        .adv {
+            display: flex;
+            align-items: flex-start;
+            gap: .7rem;
+            font-size: .85rem
+        }
+
+        .adv i {
+            color: var(--accent);
+            margin-top: .2rem;
+            flex-shrink: 0
+        }
+
+        .adv strong {
+            color: var(--text);
+            display: block
+        }
+
+        .adv span {
+            color: var(--muted)
+        }
+
+        .part-g {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center
+        }
+
+        .part-list {
+            list-style: none;
+            margin-top: 1.4rem;
+            display: flex;
+            flex-direction: column;
+            gap: .7rem
+        }
+
+        .part-list li {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            font-size: .88rem;
+            color: var(--muted)
+        }
+
+        .part-list li i {
+            color: var(--accent)
+        }
+
+        .test-card {
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            border-left: 2px solid var(--accent);
+            border-radius: var(--r);
+            padding: 1.75rem
+        }
+
+        .test-card blockquote {
+            font-size: .9rem;
+            color: var(--muted);
+            line-height: 1.75;
+            font-style: italic
+        }
+
+        .test-meta {
+            margin-top: .95rem;
+            font-family: var(--font-m);
+            font-size: .72rem;
+            color: var(--dim)
+        }
+
+        .calc-panel {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: var(--rl);
+            overflow: hidden
+        }
+
+        .calc-g {
+            display: grid;
+            grid-template-columns: 1fr 1fr
+        }
+
+        .calc-in {
+            padding: 2rem;
+            border-right: 1px solid var(--border)
+        }
+
+        .calc-out {
+            padding: 2rem;
+            background: var(--bg-3)
+        }
+
+        .field {
+            margin-bottom: 1.5rem
+        }
+
+        .field label {
+            display: block;
+            font-family: var(--font-m);
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--muted);
+            margin-bottom: .55rem
+        }
+
+        select {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: .6rem 1rem;
+            color: var(--text);
+            font-family: var(--font-b);
+            font-size: .85rem;
+            outline: none;
+            appearance: none;
+            cursor: pointer;
+            transition: border-color .2s
+        }
+
+        select:focus {
+            border-color: var(--accent-border)
+        }
+
+        select option {
+            background: #0c0f13
+        }
+
+        .p-lbl {
+            font-family: var(--font-m);
+            font-size: .68rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--muted);
+            margin-bottom: .4rem
+        }
+
+        .p-val {
+            font-family: var(--font-d);
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: -.03em;
+            background: linear-gradient(135deg, var(--accent), #38bdf8);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent
+        }
+
+        .p-note {
+            font-family: var(--font-m);
+            font-size: .7rem;
+            color: var(--muted);
+            margin-top: .35rem;
+            letter-spacing: .03em
+        }
+
+        .p-bonus {
+            display: none;
+            font-family: var(--font-m);
+            font-size: .7rem;
+            color: var(--accent);
+            margin-top: .4rem;
+            letter-spacing: .04em
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 1.5rem 0
+        }
+
+        .calc-hint {
+            font-family: var(--font-m);
+            font-size: .68rem;
+            color: var(--muted);
+            line-height: 1.75;
+            margin-bottom: 1.25rem
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2.5rem 1.5rem
+        }
+
+        .foot-i {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem
+        }
+
+        .foot-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center
+        }
+
+        .foot-links a {
+            font-size: .85rem;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color .15s;
+            display: flex;
+            align-items: center;
+            gap: .4rem
+        }
+
+        .foot-links a:hover {
+            color: var(--accent)
+        }
+
+        .foot-copy {
+            font-family: var(--font-m);
+            font-size: .7rem;
+            color: var(--dim);
+            text-align: center;
+            line-height: 1.85;
+            letter-spacing: .03em
+        }
+
+        /* AGENT PROFIT BLOCK */
+        .agent-profit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
+            margin-top: 2rem
+        }
+
+        .agent-profit-card {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 1.5rem;
+            transition: all .2s
+        }
+
+        .agent-profit-card:hover {
+            border-color: var(--accent-border);
+            background: var(--bg-3)
+        }
+
+        .agent-profit-card .big-num {
+            font-family: var(--font-d);
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -.03em;
+            background: linear-gradient(135deg, var(--accent), #a78bfa);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            line-height: 1;
+            margin-bottom: .55rem
+        }
+
+        .agent-profit-card h4 {
+            font-family: var(--font-d);
+            font-size: .95rem;
+            font-weight: 700;
+            letter-spacing: -.01em;
+            margin-bottom: .35rem;
+            color: var(--text)
+        }
+
+        .agent-profit-card p {
+            font-size: .8rem;
+            color: var(--muted);
+            line-height: 1.6
+        }
+
+        .agent-profit-card i {
+            color: var(--accent);
+            font-size: 1.1rem;
+            margin-bottom: .65rem;
+            display: block
+        }
+
+        @media(max-width:900px) {
+            .stats-g {
+                grid-template-columns: 1fr 1fr
+            }
+            .stat:nth-child(2) {
+                border-right: none
+            }
+            .part-g {
+                grid-template-columns: 1fr;
+                gap: 2rem
+            }
+            .calc-g {
+                grid-template-columns: 1fr
+            }
+            .calc-in {
+                border-right: none;
+                border-bottom: 1px solid var(--border)
+            }
+        }
+        @media(max-width:600px) {
+            .hero {
+                padding: 4rem 1rem 3rem
+            }
+            section {
+                padding: 3rem 1rem
+            }
+            .stats-g {
+                grid-template-columns: 1fr
+            }
+            .stat {
+                border-right: none;
+                border-bottom: 1px solid var(--border)
+            }
+            .nav-links {
+                display: none
+            }
+        }
+    </style>
 </head>
 <body>
 
-<nav>
-  <div class="nav-i">
-    <a href="/" class="logo">
-      <div class="logo-m">
-        <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
-          <path d="M16 4L28 10.5V21.5L16 28L4 21.5V10.5L16 4Z" stroke="#d4ff33" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M16 4V16L28 21.5M16 16L4 22M16 16L28 10.5M16 16L4 10.5" stroke="#d4ff33" stroke-width="1.2" opacity="0.6"/>
-          <circle cx="16" cy="16" r="2" fill="#d4ff33"/>
-        </svg>
-      </div>
-      <span class="logo-t">Cycle<span>less</span></span>
-    </a>
-    <div class="nav-links">
-      <a href="#products" class="nav-a">Продукты</a>
-      <a href="#modules" class="nav-a">Модули</a>
-      <a href="#solutions" class="nav-a">Решения</a>
-      <a href="#cases" class="nav-a">Кейсы</a>
-      <a href="#comparison" class="nav-a">Сравнение</a>
-      <a href="#partners" class="nav-a">Партнёрам</a>
-      <a href="#calculator" class="nav-a">Калькулятор</a>
-    </div>
-    <a href="https://t.me/cycleless" target="_blank" class="nav-cta">
-      <i class="fab fa-telegram"></i> @cycleless
-    </a>
-  </div>
-</nav>
-
-<section class="hero">
-  <div class="container">
-    <div class="hero-badge">
-      <i class="fas fa-bolt-lightning"></i>
-      <span>Win-win-win&nbsp;—&nbsp; ROI</span>
-    </div>
-    <h1>Выходим из <span class="g">порочного круга</span> рутины</h1>
-    <p class="hero-desc">AI-интегратор для бизнеса с модульной архитектурой «Ядро + Модули». Полное отделение владения от исполнения. Гарантируем отказоустойчивость, масштабирование и работу 24/7.</p>
-    <div class="hero-actions">
-      <a href="#calculator" class="btn btn-p"><i class="fas fa-calculator"></i> Рассчитать стоимость</a>
-      <a href="https://t.me/cycleless" target="_blank" class="btn btn-s"><i class="fab fa-telegram"></i> Написать в Telegram</a>
-    </div>
-  </div>
-</section>
-
-<div class="stats-strip">
-  <div class="stats-g">
-    <div class="stat">
-      <div class="stat-ic"><i class="fas fa-shield-halved"></i></div>
-      <div class="stat-l">Отказоустойчивость</div>
-      <div class="stat-v">99.95% SLA, кластеризация</div>
-    </div>
-    <div class="stat">
-      <div class="stat-ic"><i class="fas fa-chart-line"></i></div>
-      <div class="stat-l">Масштабирование</div>
-      <div class="stat-v">От 100 запросов до миллионов</div>
-    </div>
-    <div class="stat">
-      <div class="stat-ic"><i class="fas fa-clock"></i></div>
-      <div class="stat-l">Работа 24/7</div>
-      <div class="stat-v">AI-агенты без выходных</div>
-    </div>
-    <div class="stat">
-      <div class="stat-ic"><i class="fas fa-link-slash"></i></div>
-      <div class="stat-l">Владение ≠ Исполнение</div>
-      <div class="stat-v">Готовые компоненты</div>
-    </div>
-  </div>
-</div>
-
-<section id="products">
-  <div class="container">
-    <div class="sh">
-      <div class="lbl"><span>Архитектура</span></div>
-      <h2>Ядро&nbsp;+ <span class="g">Модули</span></h2>
-      <p>Ядра решают конкретную бизнес-задачу. Модули — усилители, которые подключаются к любому ядру за отдельную плату. Ручная интеграция, предсказуемый ROI.</p>
-    </div>
-    <div style="margin-bottom:2.25rem">
-      <div class="module-head"><i class="fas fa-cube"></i> Ядра (Core)</div>
-      <div class="badge-grp">
-        <span class="badge"><i class="fas fa-database"></i> CRM-Реаниматор</span>
-        <span class="badge"><i class="fas fa-microscope"></i> Tech X-Ray</span>
-        <span class="badge"><i class="fas fa-brain"></i> Chaos Classifier</span>
-        <span class="badge"><i class="fas fa-tags"></i> Номенклатура</span>
-        <span class="badge"><i class="fas fa-bullseye"></i> Ключевое действие</span>
-        <span class="badge"><i class="fas fa-layer-group"></i> Custom Greenfield</span>
-      </div>
-    </div>
-    <div>
-      <div class="module-head"><i class="fas fa-puzzle-piece"></i> Модули (Modules)</div>
-      <div class="badge-grp">
-        <span class="badge">AI‑Звонки</span>
-        <span class="badge">Голосовой ИИ</span>
-        <span class="badge">Документооборот</span>
-        <span class="badge">Парсинг интернета</span>
-        <span class="badge">Парсинг конкурентов</span>
-        <span class="badge">Генерация видео</span>
-        <span class="badge">Генерация фото</span>
-        <span class="badge">AI‑Проверки</span>
-        <span class="badge">Мессенджеры (Omni)</span>
-        <span class="badge">Календари</span>
-        <span class="badge">Интеграции (API Gateway)</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section style="padding-top:0">
-  <div class="container">
-    <div class="sh">
-      <div class="lbl"><span>Цены</span></div>
-      <h2>Стоимость <span class="g">ядер</span></h2>
-    </div>
-    <div class="tw">
-      <table>
-        <thead><tr><th>Продукт</th><th>Light — быстрый вход</th><th>Стандарт — долгосрок</th><th>Примечание</th></tr></thead>
-        <tbody>
-          <tr><td>CRM‑Реаниматор</td><td>150 000 ₽ разово</td><td>150 000 ₽ + 20 000 ₽/мес<div class="td-n">12 месяцев</div></td><td><div class="td-n">% от возвращённых лидов по запросу</div></td></tr>
-          <tr><td>Tech X‑Ray</td><td>50 000 ₽<div class="td-n">экспресс, возврат при апсейле</div></td><td>150 000 ₽<div class="td-n">полный аудит с гарантией</div></td><td><div class="td-n">Экспресс — лидогенератор</div></td></tr>
-          <tr><td>Chaos Classifier</td><td>0 ₽ сетап → 45 000 ₽/мес<div class="td-n">24 месяца</div></td><td>80 000 ₽ сетап + 25 000 ₽/мес<div class="td-n">12 месяцев</div></td><td><div class="td-n">YouTube, TG, Inst, email и др.</div></td></tr>
-          <tr><td>Номенклатура</td><td>30 000 ₽ сетап + 35 000 ₽/мес</td><td>80 000 ₽ сетап + 25 000 ₽/мес<div class="td-n">12 месяцев</div></td><td><div class="td-n">Любой документооборот → цифра</div></td></tr>
-          <tr><td>Ключевое действие</td><td>0 ₽ сетап → 40 000 ₽/мес<div class="td-n">мин. 3 месяца</div></td><td>100 000 ₽ сетап + 25 000 ₽/мес</td><td><div class="td-n">Бот ведёт до цели</div></td></tr>
-          <tr><td>Custom Greenfield</td><td>Discovery — 200 000 ₽</td><td>MVP 500 000 ₽ + запуск от 300 000 ₽</td><td><div class="td-n">Опцион до 10%</div></td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<section id="modules">
-  <div class="container">
-    <div class="sh">
-      <div class="lbl"><span>Модули</span></div>
-      <h2>Подключаются <span class="g">к любому ядру</span></h2>
-    </div>
-    <div class="tw">
-      <table>
-        <thead><tr><th>Модуль</th><th>Подключение, ₽</th><th>SLA/мес, ₽</th><th>Мин. срок</th><th>Описание</th></tr></thead>
-        <tbody>
-          <tr><td>AI‑Звонки</td><td>60 000</td><td>30 000</td><td>3 мес.</td><td>Исходящий обзвон по базе</td></tr>
-          <tr><td>Голосовой ИИ</td><td>40 000</td><td>20 000</td><td>3 мес.</td><td>Синтез и распознавание речи</td></tr>
-          <tr><td>Документооборот</td><td>80 000</td><td>35 000</td><td>6 мес.</td><td>Генерация, сбор, подпись</td></tr>
-          <tr><td>Парсинг интернета</td><td>50 000</td><td>25 000</td><td>3 мес.</td><td>Сбор с сайтов, соцсетей</td></tr>
-          <tr><td>Парсинг конкурентов</td><td>100 000</td><td>50 000</td><td>6 мес.</td><td>Мониторинг чатов и каналов</td></tr>
-          <tr><td>Генерация видео</td><td>70 000</td><td>40 000</td><td>3 мес.</td><td>AI-ролики, шортсы, реклама</td></tr>
-          <tr><td>Генерация фото</td><td>40 000</td><td>20 000</td><td>3 мес.</td><td>Изображения, мокапы</td></tr>
-          <tr><td>AI‑Проверки</td><td>80 000</td><td>45 000</td><td>3 мес.</td><td>Верификация документов, контрагентов</td></tr>
-          <tr><td>Мессенджеры (Omni)</td><td>100 000</td><td>50 000</td><td>6 мес.</td><td>WhatsApp, Telegram, Instagram и др.</td></tr>
-          <tr><td>Календари</td><td>30 000</td><td>15 000</td><td>3 мес.</td><td>Синхронизация, бронирование</td></tr>
-          <tr><td>Интеграции (API Gateway)</td><td>от 150 000</td><td>от 60 000</td><td>6 мес.</td><td>Кастомные коннекторы к 1С, CRM, ERP</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="info" style="margin-top:1.25rem">
-      <i class="fas fa-percent"></i>
-      <p><strong>Скидки за связки:</strong> Ядро + 1 модуль → <strong>−20%</strong> на сетап модуля. Ядро + 2+ модуля → <strong>−15%</strong> на каждый. Ядро + 3+ модуля → <strong>SLA первого месяца бесплатно.</strong></p>
-    </div>
-  </div>
-</section>
-
-<section id="solutions" style="background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
-  <div class="container">
-    <div class="sh sh-c">
-      <div class="lbl"><span>Готовые решения</span></div>
-      <h2>Собранные <span class="g">бизнес-пакеты</span></h2>
-    </div>
-    <div class="sol-g">
-      <div class="card">
-        <div class="card-ic"><i class="fas fa-phone-slash"></i></div>
-        <h3>Анти-Отказник</h3>
-        <p>CRM-Реаниматор + AI‑Звонки + Голосовой ИИ. Возвращаем до 40% отказников в воронку автоматически.</p>
-        <div class="card-meta">Сетап ~200 000 ₽ &nbsp;·&nbsp; SLA 70 000 ₽/мес</div>
-      </div>
-      <div class="card">
-        <div class="card-ic"><i class="fas fa-file-signature"></i></div>
-        <h3>Цифровой Документооборот</h3>
-        <p>Номенклатура + Документооборот + AI‑Проверки. Полная автоматизация входящих документов.</p>
-        <div class="card-meta">Сетап ~150 000 ₽ &nbsp;·&nbsp; SLA 75 000 ₽/мес</div>
-      </div>
-      <div class="card">
-        <div class="card-ic"><i class="fas fa-satellite-dish"></i></div>
-        <h3>Лидогенерация 360</h3>
-        <p>Tech X-Ray (экспресс) + Парсинг интернета + Мессенджеры Omni. Поток горячих лидов 24/7.</p>
-        <div class="card-meta">Сетап ~200 000 ₽ &nbsp;·&nbsp; SLA 100 000 ₽/мес</div>
-      </div>
-    </div>
-    <div class="info" style="margin-top:2rem">
-      <i class="fas fa-shield-check"></i>
-      <p><strong>SLA — не просто багфикс.</strong> Ответственность за бесперебойную работу вашего бизнес-процесса 24/7. Мы гарантируем KPI, а не просто доступность.</p>
-    </div>
-  </div>
-</section>
-
-<section id="cases" style="background:var(--bg);border-top:1px solid var(--border)">
-  <div class="container">
-    <div class="sh">
-      <div class="lbl"><span>Кейсы</span></div>
-      <h2>Математика <span class="g">побеждает хайп</span></h2>
-      <p>Реальные проекты, где мы отказались от модного решения и выбрали правильное.</p>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:1.5rem">
-
-      <!-- CASE 1 -->
-      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;display:grid;grid-template-columns:1fr 2fr;transition:border-color .25s" onmouseenter="this.style.borderColor='rgba(212,255,51,.2)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.06)'">
-        <div style="padding:2rem;background:var(--bg-3);border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between">
-          <div>
-            <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:1.25rem">Case_01</div>
-            <div style="font-family:var(--font-d);font-size:3.5rem;font-weight:800;letter-spacing:-.04em;background:linear-gradient(135deg,var(--accent),#38bdf8);background-clip:text;-webkit-background-clip:text;color:transparent;line-height:1">×50</div>
-            <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);margin-top:.4rem;letter-spacing:.04em">ROI / скорость</div>
-          </div>
-          <div style="margin-top:2rem">
-            <div style="display:flex;flex-wrap:wrap;gap:.4rem">
-              <span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:5px;padding:.2rem .65rem;font-family:var(--font-m);font-size:.65rem;color:var(--accent)">CPU-only</span>
-              <span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:5px;padding:.2rem .65rem;font-family:var(--font-m);font-size:.65rem;color:var(--accent)">4GB RAM</span>
-              <span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:5px;padding:.2rem .65rem;font-family:var(--font-m);font-size:.65rem;color:var(--accent)">0 ₽ GPU</span>
+    <nav>
+        <div class="nav-i">
+            <a href="/" class="logo">
+                <div class="logo-m">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="32" height="32" rx="6" fill="#050806" />
+                        <path d="M16 5L25.5 10.5V21.5L16 27L6.5 21.5V10.5L16 5Z" stroke="#D4FF33" stroke-width="2" stroke-linejoin="round" />
+                        <path d="M16 5V16L25.5 21.5M16 16L6.5 22M16 27V16L25.5 10.5M16 16L6.5 10.5" stroke="#D4FF33" stroke-width="1.2" opacity="0.9" />
+                        <circle cx="16" cy="16" r="1.5" fill="#D4FF33" />
+                    </svg>
+                </div>
+                <span class="logo-t">Cycle<span>less</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="#products" class="nav-a">Продукты</a>
+                <a href="#agent-core" class="nav-a">Агентное ядро</a>
+                <a href="#modules" class="nav-a">Модули</a>
+                <a href="#solutions" class="nav-a">Решения</a>
+                <a href="#cases" class="nav-a">Кейсы</a>
+                <a href="#comparison" class="nav-a">Сравнение</a>
+                <a href="#calculator" class="nav-a">Калькулятор</a>
+                <a href="#about" class="nav-a">О компании</a>
             </div>
-          </div>
+            <a href="https://t.me/cycleless" target="_blank" class="nav-cta">
+                <i class="fab fa-telegram"></i> @cycleless
+            </a>
         </div>
-        <div style="padding:2rem">
-          <h3 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;letter-spacing:-.015em;margin-bottom:1.5rem">HDR-генерация без GPU-инфраструктуры</h3>
-          <div style="display:flex;flex-direction:column;gap:1.1rem">
-            <div style="display:flex;gap:1rem;align-items:flex-start">
-              <div style="flex-shrink:0;width:28px;height:28px;background:#1a1f2a;border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center">
-                <i class="fas fa-fire" style="font-size:.7rem;color:var(--muted)"></i>
-              </div>
-              <div>
-                <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.3rem">Задача заказчика</div>
-                <p style="font-size:.875rem;color:var(--text);line-height:1.65">Внедрить тяжёлую нейросеть для генерации HDR-контента из статичных изображений. Планировалась дорогостоящая GPU-инфраструктура в облаке.</p>
-              </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">
+                <i class="fas fa-bolt-lightning"></i>
+                <span>Win-win-win&nbsp;—&nbsp; ROI</span>
             </div>
-            <div style="display:flex;gap:1rem;align-items:flex-start">
-              <div style="flex-shrink:0;width:28px;height:28px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:7px;display:flex;align-items:center;justify-content:center">
-                <i class="fas fa-lightbulb" style="font-size:.7rem;color:var(--accent)"></i>
-              </div>
-              <div>
-                <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.3rem">Решение Cycleless</div>
-                <p style="font-size:.875rem;color:var(--text);line-height:1.65">Заменили «хайповый AI» на кастомную математическую модель с легковесными ML-модулями. Никаких нейросетей — только точная инженерия.</p>
-              </div>
+            <h1>Выходим из <span class="g">порочного круга</span> рутины</h1>
+            <p class="hero-desc">AI-интегратор для бизнеса с модульной архитектурой «Ядро + Модули». Полное отделение владения от исполнения. Гарантируем отказоустойчивость, масштабирование и работу 24/7.</p>
+            <div class="hero-actions">
+                <a href="#calculator" class="btn btn-p"><i class="fas fa-calculator"></i> Рассчитать стоимость</a>
+                <a href="https://t.me/cycleless" target="_blank" class="btn btn-s"><i class="fab fa-telegram"></i> Написать в Telegram</a>
             </div>
-            <div style="display:flex;gap:1rem;align-items:flex-start">
-              <div style="flex-shrink:0;width:28px;height:28px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:7px;display:flex;align-items:center;justify-content:center">
-                <i class="fas fa-chart-line" style="font-size:.7rem;color:var(--accent)"></i>
-              </div>
-              <div>
-                <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.3rem">Результат</div>
-                <p style="font-size:.875rem;color:var(--text);line-height:1.65">Скорость генерации выросла в 50 раз. Система работает на обычном CPU с 4GB RAM. Экономия на облачных костах — кратная. Ни рубля в GPU-инфраструктуру.</p>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
+    </section>
 
-      <!-- CASE 2 -->
-      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;display:grid;grid-template-columns:1fr 2fr;transition:border-color .25s" onmouseenter="this.style.borderColor='rgba(212,255,51,.2)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.06)'">
-        <div style="padding:2rem;background:var(--bg-3);border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between">
-          <div>
-            <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:1.25rem">Case_02</div>
-            <div style="font-family:var(--font-d);font-size:3.5rem;font-weight:800;letter-spacing:-.04em;background:linear-gradient(135deg,var(--accent),#a78bfa);background-clip:text;-webkit-background-clip:text;color:transparent;line-height:1">100%</div>
-            <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);margin-top:.4rem;letter-spacing:.04em">точность парсинга</div>
-          </div>
-          <div style="margin-top:2rem">
-            <div style="display:flex;flex-wrap:wrap;gap:.4rem">
-              <span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:5px;padding:.2rem .65rem;font-family:var(--font-m);font-size:.65rem;color:var(--accent)">Мат. модель</span>
-              <span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:5px;padding:.2rem .65rem;font-family:var(--font-m);font-size:.65rem;color:var(--accent)">PDF / Таблицы</span>
+    <div class="stats-strip">
+        <div class="stats-g">
+            <div class="stat">
+                <div class="stat-ic"><i class="fas fa-shield-halved"></i></div>
+                <div class="stat-l">Отказоустойчивость</div>
+                <div class="stat-v">99.95% SLA, кластеризация</div>
             </div>
-          </div>
+            <div class="stat">
+                <div class="stat-ic"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-l">Масштабирование</div>
+                <div class="stat-v">От 100 запросов до миллионов</div>
+            </div>
+            <div class="stat">
+                <div class="stat-ic"><i class="fas fa-clock"></i></div>
+                <div class="stat-l">Работа 24/7</div>
+                <div class="stat-v">AI-агенты без выходных</div>
+            </div>
+            <div class="stat">
+                <div class="stat-ic"><i class="fas fa-link-slash"></i></div>
+                <div class="stat-l">Владение ≠ Исполнение</div>
+                <div class="stat-v">Готовые компоненты</div>
+            </div>
         </div>
-        <div style="padding:2rem">
-          <h3 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;letter-spacing:-.015em;margin-bottom:1.5rem">Физика бумаги вместо нейросети: парсинг таблиц с нулевой погрешностью</h3>
-          <div style="display:flex;flex-direction:column;gap:1.1rem">
-            <div style="display:flex;gap:1rem;align-items:flex-start">
-              <div style="flex-shrink:0;width:28px;height:28px;background:#1a1f2a;border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center">
-                <i class="fas fa-fire" style="font-size:.7rem;color:var(--muted)"></i>
-              </div>
-              <div>
-                <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.3rem">Задача заказчика</div>
-                <p style="font-size:.875rem;color:var(--text);line-height:1.65">Точный парсинг таблиц из PDF-документов. Классические подходы давали ошибки на нестандартных сетках, слияниях ячеек и ротированных страницах.</p>
-              </div>
+    </div>
+
+    <section id="products">
+        <div class="container">
+            <div class="sh">
+                <div class="lbl"><span>Архитектура</span></div>
+                <h2>Ядро&nbsp;+ <span class="g">Модули</span></h2>
+                <p>Ядра решают конкретную бизнес-задачу. Модули — усилители, которые подключаются к любому ядру за отдельную плату. Ручная интеграция, предсказуемый ROI.</p>
             </div>
-            <div style="display:flex;gap:1rem;align-items:flex-start">
-              <div style="flex-shrink:0;width:28px;height:28px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:7px;display:flex;align-items:center;justify-content:center">
-                <i class="fas fa-lightbulb" style="font-size:.7rem;color:var(--accent)"></i>
-              </div>
-              <div>
-                <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.3rem">Решение Cycleless</div>
-                <p style="font-size:.875rem;color:var(--text);line-height:1.65">Построили математическую модель, симулирующую физическое поведение сетки на листе бумаги — деформации, натяжения, смещения линий. Модель предсказывает истинные границы ячеек без обучения.</p>
-              </div>
+            <div style="margin-bottom:2.25rem">
+                <div class="module-head"><i class="fas fa-cube"></i> Ядра (Core)</div>
+                <div class="badge-grp">
+                    <span class="badge"><i class="fas fa-database"></i> CRM-Реаниматор</span>
+                    <span class="badge"><i class="fas fa-microscope"></i> Tech X-Ray</span>
+                    <span class="badge"><i class="fas fa-brain"></i> Chaos Classifier</span>
+                    <span class="badge"><i class="fas fa-tags"></i> Номенклатура</span>
+                    <span class="badge"><i class="fas fa-bullseye"></i> Ключевое действие</span>
+                    <span class="badge"><i class="fas fa-robot"></i> Агентное ядро</span>
+                    <span class="badge"><i class="fas fa-layer-group"></i> Custom Greenfield</span>
+                </div>
             </div>
-            <div style="display:flex;gap:1rem;align-items:flex-start">
-              <div style="flex-shrink:0;width:28px;height:28px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:7px;display:flex;align-items:center;justify-content:center">
-                <i class="fas fa-chart-line" style="font-size:.7rem;color:var(--accent)"></i>
-              </div>
-              <div>
-                <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.3rem">Результат</div>
-                <p style="font-size:.875rem;color:var(--text);line-height:1.65">100% точность распознавания структуры таблиц на реальных документах. Никакого дообучения под новые форматы — физика не меняется.</p>
-              </div>
+            <div>
+                <div class="module-head"><i class="fas fa-puzzle-piece"></i> Модули (Modules)</div>
+                <div class="badge-grp">
+                    <span class="badge">AI‑Звонки</span>
+                    <span class="badge">Голосовой ИИ</span>
+                    <span class="badge">Документооборот</span>
+                    <span class="badge">Парсинг интернета</span>
+                    <span class="badge">Парсинг конкурентов</span>
+                    <span class="badge">Генерация видео</span>
+                    <span class="badge">Генерация фото</span>
+                    <span class="badge">AI‑Проверки</span>
+                    <span class="badge">Мессенджеры (Omni)</span>
+                    <span class="badge">Календари</span>
+                    <span class="badge">Интеграции (API Gateway)</span>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
+    </section>
 
-      <!-- CASE 3 -->
-      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;display:grid;grid-template-columns:1fr 2fr;transition:border-color .25s" onmouseenter="this.style.borderColor='rgba(212,255,51,.2)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.06)'">
-        <div style="padding:2rem;background:var(--bg-3);border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between">
-          <div>
-            <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:1.25rem">Case_03</div>
-            <div style="font-family:var(--font-d);font-size:3.5rem;font-weight:800;letter-spacing:-.04em;background:linear-gradient(135deg,var(--accent),#38bdf8);background-clip:text;-webkit-background-clip:text;color:transparent;line-height:1">O(log n)</div>
-            <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);margin-top:.4rem;letter-spacing:.04em">вместо O(n) × LLM</div>
-          </div>
-          <div style="margin-top:2rem">
-            <div style="display:flex;flex-wrap:wrap;gap:.4rem">
-              <span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:5px;padding:.2rem .65rem;font-family:var(--font-m);font-size:.65rem;color:var(--accent)">PageRank</span>
-              <span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:5px;padding:.2rem .65rem;font-family:var(--font-m);font-size:.65rem;color:var(--accent)">Graph Search</span>
+    <section style="padding-top:0">
+        <div class="container">
+            <div class="sh">
+                <div class="lbl"><span>Цены</span></div>
+                <h2>Стоимость <span class="g">ядер</span></h2>
             </div>
-          </div>
-        </div>
-        <div style="padding:2rem">
-          <h3 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;letter-spacing:-.015em;margin-bottom:1.5rem">PageRank вместо LLM: поиск по огромной базе без прогонов через модель</h3>
-          <div style="display:flex;flex-direction:column;gap:1.1rem">
-            <div style="display:flex;gap:1rem;align-items:flex-start">
-              <div style="flex-shrink:0;width:28px;height:28px;background:#1a1f2a;border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center">
-                <i class="fas fa-fire" style="font-size:.7rem;color:var(--muted)"></i>
-              </div>
-              <div>
-                <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.3rem">Задача заказчика</div>
-                <p style="font-size:.875rem;color:var(--text);line-height:1.65">Интеллектуальный поиск по огромной базе данных. Предложенный подход — прогон каждого запроса через LLM для семантического матчинга. Стоимость и латентность — неприемлемые.</p>
-              </div>
+            <div class="tw">
+                <table>
+                    <thead><tr><th>Продукт</th><th>Light — быстрый вход</th><th>Стандарт — долгосрок</th><th>Примечание</th></tr></thead>
+                    <tbody>
+                        <tr><td>CRM‑Реаниматор</td><td>150 000 ₽ разово</td><td>150 000 ₽ + 20 000 ₽/мес<div class="td-n">12 месяцев</div></td><td><div class="td-n">% от возвращённых лидов по запросу</div></td></tr>
+                        <tr><td>Tech X‑Ray</td><td>50 000 ₽<div class="td-n">экспресс, возврат при апсейле</div></td><td>150 000 ₽<div class="td-n">полный аудит с гарантией</div></td><td><div class="td-n">Экспресс — лидогенератор</div></td></tr>
+                        <tr><td>Chaos Classifier</td><td>0 ₽ сетап → 45 000 ₽/мес<div class="td-n">24 месяца</div></td><td>80 000 ₽ сетап + 25 000 ₽/мес<div class="td-n">12 месяцев</div></td><td><div class="td-n">YouTube, TG, Inst, email и др.</div></td></tr>
+                        <tr><td>Номенклатура</td><td>30 000 ₽ сетап + 35 000 ₽/мес</td><td>80 000 ₽ сетап + 25 000 ₽/мес<div class="td-n">12 месяцев</div></td><td><div class="td-n">Любой документооборот → цифра</div></td></tr>
+                        <tr><td>Ключевое действие</td><td>0 ₽ сетап → 40 000 ₽/мес<div class="td-n">мин. 3 месяца</div></td><td>100 000 ₽ сетап + 25 000 ₽/мес</td><td><div class="td-n">Бот ведёт до цели</div></td></tr>
+                        <tr style="background:rgba(212,255,51,0.03);border-left:2px solid var(--accent)">
+                            <td><strong style="color:var(--accent)">Агентное ядро</strong> <span style="font-size:.7rem;color:var(--accent);display:block;margin-top:.15rem">NEW</span></td>
+                            <td>0 ₽ сетап → 60 000 ₽/мес<div class="td-n">мин. 3 месяца</div></td>
+                            <td>200 000 ₽ сетап + 35 000 ₽/мес<div class="td-n">12 месяцев</div></td>
+                            <td><div class="td-n">Цифровой сотрудник под ключ. Hermes, OpenClaw, Pi и др.</div></td>
+                        </tr>
+                        <tr><td>Custom Greenfield</td><td>Discovery — 200 000 ₽</td><td>MVP 500 000 ₽ + запуск от 300 000 ₽</td><td><div class="td-n">Опцион до 10%</div></td></tr>
+                    </tbody>
+                </table>
             </div>
-            <div style="display:flex;gap:1rem;align-items:flex-start">
-              <div style="flex-shrink:0;width:28px;height:28px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:7px;display:flex;align-items:center;justify-content:center">
-                <i class="fas fa-lightbulb" style="font-size:.7rem;color:var(--accent)"></i>
-              </div>
-              <div>
-                <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.3rem">Решение Cycleless</div>
-                <p style="font-size:.875rem;color:var(--text);line-height:1.65">Реализовали механизм на основе PageRank — граф связей между сущностями базы, ранжирование по весу узлов. LLM используется один раз при индексации, а не при каждом запросе.</p>
-              </div>
+        </div>
+    </section>
+
+    <!-- ⭐ НОВЫЙ РАЗДЕЛ: АГЕНТНОЕ ЯДРО — ПРОФИТ -->
+    <section id="agent-core" style="background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+        <div class="container">
+            <div class="sh sh-c">
+                <div class="lbl"><span>Агентное ядро</span></div>
+                <h2>Цифровой сотрудник, который <span class="g">не спит, не ест и не увольняется</span></h2>
+                <p>Разворачиваем агентные системы (Hermes, OpenClaw, Pi и аналоги) под ключ. Это не чат-бот. Это полноценный AI-работник, который принимает решения, выполняет задачи и интегрируется в ваши бизнес-процессы 24/7.</p>
             </div>
-            <div style="display:flex;gap:1rem;align-items:flex-start">
-              <div style="flex-shrink:0;width:28px;height:28px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:7px;display:flex;align-items:center;justify-content:center">
-                <i class="fas fa-chart-line" style="font-size:.7rem;color:var(--accent)"></i>
-              </div>
-              <div>
-                <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.3rem">Результат</div>
-                <p style="font-size:.875rem;color:var(--text);line-height:1.65">Поиск работает за миллисекунды при любом объёме базы. Стоимость запроса — нулевая. Релевантность — выше, чем у наивного LLM-матчинга, за счёт графовой семантики связей.</p>
-              </div>
+
+            <div class="agent-profit-grid">
+                <div class="agent-profit-card">
+                    <i class="fas fa-clock"></i>
+                    <div class="big-num">24/7</div>
+                    <h4>Работа без перерыва</h4>
+                    <p>Цифровой сотрудник не уходит в отпуск, не болеет и не теряет концентрацию. Обрабатывает заявки, письма и звонки круглосуточно — без выходных и праздников.</p>
+                </div>
+                <div class="agent-profit-card">
+                    <i class="fas fa-coins"></i>
+                    <div class="big-num">−60%</div>
+                    <h4>Снижение затрат на персонал</h4>
+                    <p>Один агент заменяет 2–4 сотрудников поддержки или операционного отдела. Экономия на ФОТ, налогах и онбординге — от 120 000 ₽ в месяц.</p>
+                </div>
+                <div class="agent-profit-card">
+                    <i class="fas fa-rocket"></i>
+                    <div class="big-num">×10</div>
+                    <h4>Мгновенное масштабирование</h4>
+                    <p>Нужно больше мощности? Агент масштабируется за минуты, а не месяцы поиска и обучения новых людей. От 10 до 10 000 одновременных задач.</p>
+                </div>
+                <div class="agent-profit-card">
+                    <i class="fas fa-brain"></i>
+                    <div class="big-num">100%</div>
+                    <h4>Соблюдение регламентов</h4>
+                    <p>Агент не импровизирует, не забывает скрипты и не нарушает KPI. Каждое действие логируется и соответствует заданным бизнес-правилам.</p>
+                </div>
+                <div class="agent-profit-card">
+                    <i class="fas fa-plug"></i>
+                    <div class="big-num">Any</div>
+                    <h4>Подключается ко всему</h4>
+                    <p>Агентное ядро работает с любым модулем Cycleless: звонки, мессенджеры, документооборот, парсинг, CRM. Один цифровой сотрудник — сквозная автоматизация.</p>
+                </div>
+                <div class="agent-profit-card">
+                    <i class="fas fa-shield-check"></i>
+                    <div class="big-num">SLA</div>
+                    <h4>Ответственность за результат</h4>
+                    <p>Мы не просто «настроили и ушли». SLA покрывает бесперебойную работу агента. Если что-то падает — мы чиним. Вы платите за KPI, а не за код.</p>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-    </div>
-  </div>
-</section>
-
-<section id="comparison">
-  <div class="container">
-    <div class="sh">
-      <div class="lbl"><span>Сравнение с рынком</span></div>
-      <h2>Почему <span class="g">Cycleless</span></h2>
-    </div>
-    <div class="tw">
-      <table>
-        <thead>
-          <tr>
-            <th>Критерий</th>
-            <th style="color:var(--accent)">Cycleless</th>
-            <th>Крупные интеграторы</th>
-            <th>Бутик-агентства</th>
-            <th>Коробочные SaaS</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Фокус</td><td class="hl">Решение бизнес-боли (ROI)</td><td>Проектно-ориентированный</td><td>Технически-ориентированный</td><td>Функционально-ориентированный</td></tr>
-          <tr><td>Ценовая модель</td><td class="hl">Фикс + SLA, скидки за связки</td><td>Почасовая, скрытые косты</td><td>Проектная, риск удорожания</td><td>Подписка + дорогая интеграция</td></tr>
-          <tr><td>Гибкость</td><td class="hl">Модульная архитектура</td><td>Монолит, сложно менять</td><td>Ограничена стеком команды</td><td>Жёсткие рамки тарифа</td></tr>
-          <tr><td>Ответственность</td><td class="hl">Гарантии, % от профита, SLA</td><td>Средняя (формальный SLA)</td><td>Низкая (нет гарантий)</td><td>Нулевая</td></tr>
-          <tr><td>Сроки внедрения</td><td class="hl">Ядро за 2–4 недели</td><td>3–6+ месяцев</td><td>Зависят от загрузки</td><td>Мгновенно, без интеграции</td></tr>
-          <tr><td>Поддержка</td><td class="hl">Ручная интеграция + SLA 24/7</td><td>Отдельный дорогой контракт</td><td>Часто на стороне клиента</td><td>Самостоятельная</td></tr>
-          <tr><td>Измеримость</td><td class="hl">KPI встроен в каждый продукт</td><td>Требует отдельного проекта</td><td>Требует отдельного заказа</td><td>Базовая аналитика</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div style="background:var(--bg-3);border-radius:var(--r);padding:1.75rem;margin-top:1.5rem">
-      <div class="module-head" style="margin-bottom:1rem"><i class="fas fa-crown"></i> 5 причин выбрать Cycleless</div>
-      <div class="adv-g">
-        <div class="adv"><i class="fas fa-check"></i><div><strong>Решение, а не процесс</strong><span>Вы покупаете результат</span></div></div>
-        <div class="adv"><i class="fas fa-check"></i><div><strong>Результат, а не часы</strong><span>Оплата за KPI</span></div></div>
-        <div class="adv"><i class="fas fa-check"></i><div><strong>LEGO-подход</strong><span>Система растёт с вами</span></div></div>
-        <div class="adv"><i class="fas fa-check"></i><div><strong>Погружение в бизнес</strong><span>Не подрядчик, а партнёр</span></div></div>
-        <div class="adv"><i class="fas fa-check"></i><div><strong>Выход из ручной работы</strong><span>Конец порочному кругу</span></div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="partners" style="background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
-  <div class="container">
-    <div class="sh sh-c">
-      <div class="lbl"><span>Партнёрская программа</span></div>
-      <h2>Зарабатывайте <span class="g">до 15%</span> на AI-решениях ваших клиентов</h2>
-      <p>Не теряйте проекты, где нужен ИИ. Мы станем вашим технологическим плечом — вы получаете пассивный доход, а клиенты — результат.</p>
-    </div>
-
-    <!-- 4 боли партнёра -->
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:1.5rem; margin:2.5rem 0">
-      <div class="card">
-        <div class="card-ic"><i class="fas fa-brain"></i></div>
-        <h3>Боль 1: «Клиент просит AI, а у меня нет экспертизы»</h3>
-        <p>Вы умеете делать сайты, CRM или рекламу. Нанимать ML‑инженера под разовый проект — самоубийство. Фрилансер — риск сорвать сроки. <strong>Решение:</strong> Cycleless становится вашим «белым» ИТ‑отделом. Вы сохраняете лицо и не теряете клиента.</p>
-      </div>
-      <div class="card">
-        <div class="card-ic"><i class="fas fa-coins"></i></div>
-        <h3>Боль 2: «Упущенная прибыль на каждом проекте»</h3>
-        <p>Вы привели клиента, а через месяц он ушёл в другое агентство за AI‑звонками или парсингом. <strong>Решение:</strong> вы получаете <strong>до 15%</strong> с установки и с ежемесячного SLA. Допродавайте модули из нашего прайса и зарабатывайте на уже прогретой базе.</p>
-      </div>
-      <div class="card">
-        <div class="card-ic"><i class="fas fa-chart-line"></i></div>
-        <h3>Боль 3: «Нет предсказуемого рекуррента»</h3>
-        <p>Классическая модель: сделал проект → получил деньги. Голодный месяц — нет проектов. <strong>Решение:</strong> SLA наших модулей (от 20 000 до 60 000 ₽/мес) даёт вам 15% с каждой подписки. 10 клиентов → 75 000 ₽/мес пассивного дохода.</p>
-      </div>
-      <div class="card">
-        <div class="card-ic"><i class="fas fa-handshake"></i></div>
-        <h3>Боль 4: «Страх, что вендор переманит клиента»</h3>
-        <p>Боитесь отдать контакт крупной IT‑компании? <strong>Решение:</strong> Cycleless — инженерный бутик. Мы не конкурируем с вами в маркетинге и продажах. Вы всегда в копии писем, видите статусы и получаете отчёты о выплатах.</p>
-      </div>
-    </div>
-
-    <!-- Математика: почему 15% -->
-    <div class="sh sh-c" style="margin-top:1rem">
-      <div class="lbl"><span>Математика</span></div>
-      <h3 style="font-size:1.8rem; font-weight:700">Почему 15% — это аппетитно?</h3>
-    </div>
-    <div class="part-g" style="gap:2rem; margin-bottom:2.5rem">
-      <div class="test-card" style="background:var(--bg-3); border-left:2px solid var(--accent)">
-        <div style="font-family:var(--font-m); font-size:.68rem; color:var(--accent); letter-spacing:.1em; margin-bottom:1rem">Сценарий «Быстрый вход» (SMB)</div>
-        <p><strong>CRM‑Реаниматор (Стандарт)</strong> + модуль <strong>AI‑Звонки</strong><br>
-        Сетап: 150 000 + 48 000 (скидка 20%) = <strong>198 000 ₽</strong><br>
-        SLA: 20 000 + 30 000 = <strong>50 000 ₽/мес</strong></p>
-        <div style="margin-top:1rem; background:var(--accent-dim); padding:.75rem; border-radius:var(--r); border-left:3px solid var(--accent)">
-          <div>Разово с установки: <strong style="color:var(--accent); font-size:1.2rem">29 700 ₽</strong></div>
-          <div>Ежемесячно с SLA: <strong style="color:var(--accent); font-size:1.2rem">7 500 ₽/мес</strong> → 90 000 ₽ за год с одного клиента!</div>
-        </div>
-      </div>
-      <div class="test-card" style="background:var(--bg-3); border-left:2px solid var(--accent)">
-        <div style="font-family:var(--font-m); font-size:.68rem; color:var(--accent); letter-spacing:.1em; margin-bottom:1rem">Сценарий «Крупный проект» (Enterprise)</div>
-        <p><strong>Custom Greenfield (Discovery)</strong> + <strong>API Gateway</strong><br>
-        Сетап: 200 000 + 150 000 = <strong>350 000 ₽</strong><br>
-        SLA: от <strong>60 000 ₽/мес</strong></p>
-        <div style="margin-top:1rem; background:var(--accent-dim); padding:.75rem; border-radius:var(--r); border-left:3px solid var(--accent)">
-          <div>Разово с установки: <strong style="color:var(--accent); font-size:1.2rem">52 500 ₽</strong></div>
-          <div>Ежемесячно с SLA: <strong style="color:var(--accent); font-size:1.2rem">9 000 ₽/мес</strong></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CTA + кейс -->
-    <div class="part-g" style="gap:2rem; align-items:center">
-      <div>
-        <h3 style="font-family:var(--font-d); font-size:1.6rem; font-weight:800; margin-bottom:1rem">Станьте партнёром <span class="g">сегодня</span></h3>
-        <p style="margin-bottom:1.5rem">Подключайтесь к программе, получайте до 15% с каждого проекта и стройте рекуррентный доход без рисков.</p>
-        <a href="https://t.me/cycleless" target="_blank" class="btn btn-p" style="display:inline-flex; gap:.6rem">
-          <i class="fab fa-telegram"></i> Написать в Telegram
-        </a>
-      </div>
-      <div class="test-card">
-        <div style="font-family:var(--font-m); font-size:.68rem; color:var(--accent); letter-spacing:.1em; margin-bottom:1rem">
-          <i class="fas fa-quote-left" style="margin-right:.4rem"></i> Партнёрский кейс
-        </div>
-        <blockquote>«Мы перевели 3 своих клиентов на решения Cycleless. Средний чек вырос на 300к, а партнёрские отчисления составили более 250к за квартал. Советую всем, кто хочет монетизировать AI‑запросы без головной боли».</blockquote>
-        <div class="test-meta">— Алексей, CEO «Digital Fusion»</div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<section id="calculator">
-  <div class="container">
-    <div class="sh sh-c">
-      <div class="lbl"><span>Калькулятор</span></div>
-      <h2>Рассчитайте <span class="g">стоимость</span></h2>
-      <p>Выберите одно ядро и несколько модулей — цена обновится автоматически</p>
-    </div>
-    <div class="calc-panel" style="padding: 1.5rem">
-      <div class="calc-g" style="gap: 2rem">
-        <div class="calc-in" style="padding: 0; border: none">
-          <div class="field" style="margin-bottom: 2rem">
-            <label style="display: block; margin-bottom: 1rem">⚛️ Ядро (выберите одно)</label>
-            <div id="coreRadios" style="display: flex; flex-direction: column; gap: 0.75rem">
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_crm"> <span><strong>CRM-Реаниматор Light</strong> — 150 000 ₽ разово</span></label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_crm"> <span><strong>CRM-Реаниматор Стандарт</strong> — 150 000 ₽ + 20 000 ₽/мес</span></label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_xray"> <span><strong>Tech X-Ray Light</strong> — 50 000 ₽ разово</span></label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_xray"> <span><strong>Tech X-Ray Стандарт</strong> — 150 000 ₽ разово</span></label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_chaos"> <span><strong>Chaos Classifier Light</strong> — 0 ₽ + 45 000 ₽/мес</span></label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_chaos"> <span><strong>Chaos Classifier Стандарт</strong> — 80 000 ₽ + 25 000 ₽/мес</span></label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_nom"> <span><strong>Номенклатура Light</strong> — 30 000 ₽ + 35 000 ₽/мес</span></label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_nom"> <span><strong>Номенклатура Стандарт</strong> — 80 000 ₽ + 25 000 ₽/мес</span></label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_key"> <span><strong>Ключевое действие Light</strong> — 0 ₽ + 40 000 ₽/мес</span></label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_key"> <span><strong>Ключевое действие Стандарт</strong> — 100 000 ₽ + 25 000 ₽/мес</span></label>
+            <div class="info" style="margin-top:2rem">
+                <i class="fas fa-lightbulb"></i>
+                <p><strong>Что агентное ядро даёт бизнесу прямо сейчас:</strong> автоматическая обработка входящих заявок → квалификация → передача в CRM → постановка задачи менеджеру → контроль исполнения → отчёт. Весь цикл без участия человека. <strong>Вы получаете не инструмент, а готового цифрового сотрудника с предсказуемым KPI.</strong></p>
             </div>
-          </div>
-          <div class="field">
-            <label style="display: block; margin-bottom: 1rem">🧩 Модули (выберите несколько)</label>
-            <div id="modulesChecks" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.75rem">
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="ai_calls"> AI-Звонки · 60k + 30k/мес</label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="voice_ai"> Голосовой ИИ · 40k + 20k/мес</label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="docflow"> Документооборот · 80k + 35k/мес</label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="parsing_web"> Парсинг интернета · 50k + 25k/мес</label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="parsing_comp"> Парсинг конкурентов · 100k + 50k/мес</label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="video_gen"> Генерация видео · 70k + 40k/мес</label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="photo_gen"> Генерация фото · 40k + 20k/мес</label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="ai_check"> AI-Проверки · 80k + 45k/мес</label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="omni"> Мессенджеры Omni · 100k + 50k/мес</label>
-              <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="calendar"> Календари · 30k + 15k/мес</label>
+
+            <div style="text-align:center;margin-top:2rem">
+                <a href="https://t.me/cycleless" target="_blank" class="btn btn-p"><i class="fab fa-telegram"></i> Обсудить агентное ядро</a>
             </div>
-          </div>
         </div>
-        <div class="calc-out" style="background: var(--bg-2); border-radius: var(--rl); padding: 1.5rem">
-          <div style="margin-bottom: 1.5rem">
-            <div class="p-lbl">Сетап (разово)</div>
-            <div class="p-val" id="setupPrice" style="font-size: 2rem">0 ₽</div>
-          </div>
-          <div class="divider" style="margin: 1rem 0"></div>
-          <div style="margin-bottom: 1.5rem">
-            <div class="p-lbl">Ежемесячный SLA</div>
-            <div class="p-val" id="monthlyPrice" style="font-size: 2rem">0 ₽</div>
-            <div class="p-bonus" id="bonusNote" style="display: none; margin-top: 0.5rem"><i class="fas fa-gift"></i> Первый месяц SLA бесплатно</div>
-          </div>
-          <div class="divider" style="margin: 1rem 0"></div>
-          <p class="calc-hint" style="margin: 1rem 0; font-size: 0.75rem">Скидки: 1 модуль → −20% на сетап модуля, 2+ модуля → −15% на сетап каждого. Ядро + 3+ модуля → первый месяц SLA бесплатно.</p>
-          <a href="https://t.me/cycleless" target="_blank" class="btn btn-p" style="width:100%; justify-content:center; margin-top: 0.5rem">
-            <i class="fab fa-telegram"></i> Точный расчёт в Telegram
-          </a>
+    </section>
+
+    <section id="modules">
+        <div class="container">
+            <div class="sh">
+                <div class="lbl"><span>Модули</span></div>
+                <h2>Подключаются <span class="g">к любому ядру</span></h2>
+            </div>
+            <div class="tw">
+                <table>
+                    <thead><tr><th>Модуль</th><th>Подключение, ₽</th><th>SLA/мес, ₽</th><th>Мин. срок</th><th>Описание</th></tr></thead>
+                    <tbody>
+                        <tr><td>AI‑Звонки</td><td>60 000</td><td>30 000</td><td>3 мес.</td><td>Исходящий обзвон по базе</td></tr>
+                        <tr><td>Голосовой ИИ</td><td>40 000</td><td>20 000</td><td>3 мес.</td><td>Синтез и распознавание речи</td></tr>
+                        <tr><td>Документооборот</td><td>80 000</td><td>35 000</td><td>6 мес.</td><td>Генерация, сбор, подпись</td></tr>
+                        <tr><td>Парсинг интернета</td><td>50 000</td><td>25 000</td><td>3 мес.</td><td>Сбор с сайтов, соцсетей</td></tr>
+                        <tr><td>Парсинг конкурентов</td><td>100 000</td><td>50 000</td><td>6 мес.</td><td>Мониторинг чатов и каналов</td></tr>
+                        <tr><td>Генерация видео</td><td>70 000</td><td>40 000</td><td>3 мес.</td><td>AI-ролики, шортсы, реклама</td></tr>
+                        <tr><td>Генерация фото</td><td>40 000</td><td>20 000</td><td>3 мес.</td><td>Изображения, мокапы</td></tr>
+                        <tr><td>AI‑Проверки</td><td>80 000</td><td>45 000</td><td>3 мес.</td><td>Верификация документов, контрагентов</td></tr>
+                        <tr><td>Мессенджеры (Omni)</td><td>100 000</td><td>50 000</td><td>6 мес.</td><td>WhatsApp, Telegram, Instagram и др.</td></tr>
+                        <tr><td>Календари</td><td>30 000</td><td>15 000</td><td>3 мес.</td><td>Синхронизация, бронирование</td></tr>
+                        <tr><td>Интеграции (API Gateway)</td><td>от 150 000</td><td>от 60 000</td><td>6 мес.</td><td>Кастомные коннекторы к 1С, CRM, ERP</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="info" style="margin-top:1.25rem">
+                <i class="fas fa-percent"></i>
+                <p><strong>Скидки за связки:</strong> Ядро + 1 модуль → <strong>−20%</strong> на сетап модуля. Ядро + 2+ модуля → <strong>−15%</strong> на каждый. Ядро + 3+ модуля → <strong>SLA первого месяца бесплатно.</strong></p>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<footer>
-  <div class="foot-i">
-    <div style="display:flex;align-items:center;gap:.7rem">
-      <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><path d="M16 4L28 10.5V21.5L16 28L4 21.5V10.5L16 4Z" stroke="#d4ff33" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="16" r="2" fill="#d4ff33"/></svg>
-      <span style="font-family:var(--font-d);font-size:1.05rem;font-weight:700;color:var(--muted)">Cycleless</span>
-    </div>
-    <div class="foot-links">
-      <a href="https://t.me/cycleless" target="_blank"><i class="fab fa-telegram"></i> @cycleless</a>
-      <a href="privacy.html"><i class="fas fa-shield-halved"></i> Политика конфиденциальности</a>
-      <a href="terms.html"><i class="fas fa-file-contract"></i> Договор оферты</a>
-    </div>
-    <div class="foot-copy">
-      Cycleless  решаем нерешаемое автоматизациями и отказоустойчивыми AI-решениями<br>
-      Все права защищенны
-    </div>
-  </div>
-</footer>
+    <section id="solutions" style="background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+        <div class="container">
+            <div class="sh sh-c">
+                <div class="lbl"><span>Готовые решения</span></div>
+                <h2>Собранные <span class="g">бизнес-пакеты</span></h2>
+            </div>
+            <div class="sol-g">
+                <div class="card">
+                    <div class="card-ic"><i class="fas fa-phone-slash"></i></div>
+                    <h3>Анти-Отказник</h3>
+                    <p>CRM-Реаниматор + AI‑Звонки + Голосовой ИИ. Возвращаем до 40% отказников в воронку автоматически.</p>
+                    <div class="card-meta">Сетап ~200 000 ₽ &nbsp;·&nbsp; SLA 70 000 ₽/мес</div>
+                </div>
+                <div class="card">
+                    <div class="card-ic"><i class="fas fa-file-signature"></i></div>
+                    <h3>Цифровой Документооборот</h3>
+                    <p>Номенклатура + Документооборот + AI‑Проверки. Полная автоматизация входящих документов.</p>
+                    <div class="card-meta">Сетап ~150 000 ₽ &nbsp;·&nbsp; SLA 75 000 ₽/мес</div>
+                </div>
+                <div class="card">
+                    <div class="card-ic"><i class="fas fa-satellite-dish"></i></div>
+                    <h3>Лидогенерация 360</h3>
+                    <p>Tech X-Ray (экспресс) + Парсинг интернета + Мессенджеры Omni. Поток горячих лидов 24/7.</p>
+                    <div class="card-meta">Сетап ~200 000 ₽ &nbsp;·&nbsp; SLA 100 000 ₽/мес</div>
+                </div>
+                <div class="card" style="border-left:2px solid var(--accent);background:rgba(212,255,51,0.02)">
+                    <div class="card-ic"><i class="fas fa-robot"></i></div>
+                    <h3>Цифровой сотрудник</h3>
+                    <p>Агентное ядро + AI‑Звонки + Мессенджеры Omni + Документооборот. Полноценный AI-работник, закрывающий весь цикл коммуникации и документооборота.</p>
+                    <div class="card-meta">Сетап ~300 000 ₽ &nbsp;·&nbsp; SLA 125 000 ₽/мес</div>
+                </div>
+            </div>
+            <div class="info" style="margin-top:2rem">
+                <i class="fas fa-shield-check"></i>
+                <p><strong>SLA — не просто багфикс.</strong> Ответственность за бесперебойную работу вашего бизнес-процесса 24/7. Мы гарантируем KPI, а не просто доступность.</p>
+            </div>
+        </div>
+    </section>
 
-<script>
-const coreMap={light_crm:{setup:150000,monthly:0},std_crm:{setup:150000,monthly:20000},light_xray:{setup:50000,monthly:0},std_xray:{setup:150000,monthly:0},light_chaos:{setup:0,monthly:45000},std_chaos:{setup:80000,monthly:25000},light_nom:{setup:30000,monthly:35000},std_nom:{setup:80000,monthly:25000},light_key:{setup:0,monthly:40000},std_key:{setup:100000,monthly:25000}};
-const modMap={ai_calls:{setup:60000,monthly:30000},voice_ai:{setup:40000,monthly:20000},docflow:{setup:80000,monthly:35000},parsing_web:{setup:50000,monthly:25000},parsing_comp:{setup:100000,monthly:50000},video_gen:{setup:70000,monthly:40000},photo_gen:{setup:40000,monthly:20000},ai_check:{setup:80000,monthly:45000},omni:{setup:100000,monthly:50000},calendar:{setup:30000,monthly:15000}};
-function fmt(n){return n.toLocaleString('ru-RU')+' ₽'}
-function calc(){
-  // выбранное ядро (radio)
-  let coreVal=null;
-  const radioSelected=document.querySelector('input[name="core"]:checked');
-  if(radioSelected) coreVal=radioSelected.value;
-  const core=coreVal && coreMap[coreVal] ? coreMap[coreVal] : {setup:0,monthly:0};
-  
-  // выбранные модули (checkbox)
-  const mods=[];
-  document.querySelectorAll('#modulesChecks input[type="checkbox"]:checked').forEach(cb=>{
-    if(modMap[cb.value]) mods.push(modMap[cb.value]);
-  });
-  const n=mods.length;
-  const disc=n===1?0.2:(n>=2?0.15:0);
-  let ts=core.setup,tm=core.monthly;
-  for(const m of mods){
-    ts+=Math.floor(m.setup*(1-disc));
-    tm+=m.monthly;
-  }
-  document.getElementById('setupPrice').textContent=fmt(ts);
-  document.getElementById('monthlyPrice').textContent=fmt(tm);
-  const bonusNote=document.getElementById('bonusNote');
-  if(coreVal && n>=3) bonusNote.style.display='block';
-  else bonusNote.style.display='none';
-}
-// слушаем изменения на всех радио и чекбоксах
-document.querySelectorAll('input[name="core"], #modulesChecks input[type="checkbox"]').forEach(el=>{
-  el.addEventListener('change',calc);
-});
-calc();
-</script>
+    <section id="cases" style="background:var(--bg);border-top:1px solid var(--border)">
+        <div class="container">
+            <div class="sh">
+                <div class="lbl"><span>Кейсы</span></div>
+                <h2>Математика <span class="g">побеждает хайп</span></h2>
+                <p>Реальные проекты, где мы отказались от модного решения и выбрали правильное.</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:1.5rem">
+
+                <!-- CASE 1 -->
+                <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;display:grid;grid-template-columns:1fr 2fr;transition:border-color .25s" onmouseenter="this.style.borderColor='rgba(212,255,51,.2)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.06)'">
+                    <div style="padding:2rem;background:var(--bg-3);border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between">
+                        <div>
+                            <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:1.25rem">Case_01</div>
+                            <div style="font-family:var(--font-d);font-size:3.5rem;font-weight:800;letter-spacing:-.04em;background:linear-gradient(135deg,var(--accent),#38bdf8);background-clip:text;-webkit-background-clip:text;color:transparent;line-height:1">×50</div>
+                            <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);margin-top:.4rem;letter-spacing:.04em">ROI / скорость</div>
+                        </div>
+                        <div style="margin-top:2rem">
+                            <div style="display:flex;flex-wrap:wrap;gap:.4rem">
+                                <span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:5px;padding:.2rem .65rem;font-family:var(--font-m);font-size:.65rem;color:var(--accent)">CPU-only</span>
+                                <span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:5px;padding:.2rem .65rem;font-family:var(--font-m);font-size:.65rem;color:var(--accent)">4GB RAM</span>
+                                <span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:5px;padding:.2rem .65rem;font-family:var(--font-m);font-size:.65rem;color:var(--accent)">0 ₽ GPU</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding:2rem">
+                        <h3 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;letter-spacing:-.015em;margin-bottom:1.5rem">HDR-генерация без GPU-инфраструктуры</h3>
+                        <div style="display:flex;flex-direction:column;gap:1.1rem">
+                            <div style="display:flex;gap:1rem;align-items:flex-start">
+                                <div style="flex-shrink:0;width:28px;height:28px;background:#1a1f2a;border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center">
+                                    <i class="fas fa-fire" style="font-size:.7rem;color:var(--muted)"></i>
+                                </div>
+                                <div>
+                                    <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.3rem">Задача заказчика</div>
+                                    <p style="font-size:.875rem;color:var(--text);line-height:1.65">Внедрить тяжёлую нейросеть для генерации HDR-контента из статичных изображений. Планировалась дорогостоящая GPU-инфраструктура в облаке.</p>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:1rem;align-items:flex-start">
+                                <div style="flex-shrink:0;width:28px;height:28px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:7px;display:flex;align-items:center;justify-content:center">
+                                    <i class="fas fa-lightbulb" style="font-size:.7rem;color:var(--accent)"></i>
+                                </div>
+                                <div>
+                                    <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.3rem">Решение Cycleless</div>
+                                    <p style="font-size:.875rem;color:var(--text);line-height:1.65">Заменили «хайповый AI» на кастомную математическую модель с легковесными ML-модулями. Никаких нейросетей — только точная инженерия.</p>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:1rem;align-items:flex-start">
+                                <div style="flex-shrink:0;width:28px;height:28px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:7px;display:flex;align-items:center;justify-content:center">
+                                    <i class="fas fa-chart-line" style="font-size:.7rem;color:var(--accent)"></i>
+                                </div>
+                                <div>
+                                    <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.3rem">Результат</div>
+                                    <p style="font-size:.875rem;color:var(--text);line-height:1.65">Скорость генерации выросла в 50 раз. Система работает на обычном CPU с 4GB RAM. Экономия на облачных костах — кратная. Ни рубля в GPU-инфраструктуру.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CASE 2 -->
+                <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;display:grid;grid-template-columns:1fr 2fr;transition:border-color .25s" onmouseenter="this.style.borderColor='rgba(212,255,51,.2)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.06)'">
+                    <div style="padding:2rem;background:var(--bg-3);border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between">
+                        <div>
+                            <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:1.25rem">Case_02</div>
+                            <div style="font-family:var(--font-d);font-size:3.5rem;font-weight:800;letter-spacing:-.04em;background:linear-gradient(135deg,var(--accent),#a78bfa);background-clip:text;-webkit-background-clip:text;color:transparent;line-height:1">100%</div>
+                            <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);margin-top:.4rem;letter-spacing:.04em">точность парсинга</div>
+                        </div>
+                        <div style="margin-top:2rem">
+                            <div style="display:flex;flex-wrap:wrap;gap:.4rem">
+                                <span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:5px;padding:.2rem .65rem;font-family:var(--font-m);font-size:.65rem;color:var(--accent)">Мат. модель</span>
+                                <span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:5px;padding:.2rem .65rem;font-family:var(--font-m);font-size:.65rem;color:var(--accent)">PDF / Таблицы</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding:2rem">
+                        <h3 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;letter-spacing:-.015em;margin-bottom:1.5rem">Физика бумаги вместо нейросети: парсинг таблиц с нулевой погрешностью</h3>
+                        <div style="display:flex;flex-direction:column;gap:1.1rem">
+                            <div style="display:flex;gap:1rem;align-items:flex-start">
+                                <div style="flex-shrink:0;width:28px;height:28px;background:#1a1f2a;border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center">
+                                    <i class="fas fa-fire" style="font-size:.7rem;color:var(--muted)"></i>
+                                </div>
+                                <div>
+                                    <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.3rem">Задача заказчика</div>
+                                    <p style="font-size:.875rem;color:var(--text);line-height:1.65">Точный парсинг таблиц из PDF-документов. Классические подходы давали ошибки на нестандартных сетках, слияниях ячеек и ротированных страницах.</p>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:1rem;align-items:flex-start">
+                                <div style="flex-shrink:0;width:28px;height:28px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:7px;display:flex;align-items:center;justify-content:center">
+                                    <i class="fas fa-lightbulb" style="font-size:.7rem;color:var(--accent)"></i>
+                                </div>
+                                <div>
+                                    <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.3rem">Решение Cycleless</div>
+                                    <p style="font-size:.875rem;color:var(--text);line-height:1.65">Построили математическую модель, симулирующую физическое поведение сетки на листе бумаги — деформации, натяжения, смещения линий. Модель предсказывает истинные границы ячеек без обучения.</p>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:1rem;align-items:flex-start">
+                                <div style="flex-shrink:0;width:28px;height:28px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:7px;display:flex;align-items:center;justify-content:center">
+                                    <i class="fas fa-chart-line" style="font-size:.7rem;color:var(--accent)"></i>
+                                </div>
+                                <div>
+                                    <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.3rem">Результат</div>
+                                    <p style="font-size:.875rem;color:var(--text);line-height:1.65">100% точность распознавания структуры таблиц на реальных документах. Никакого дообучения под новые форматы — физика не меняется.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CASE 3 -->
+                <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;display:grid;grid-template-columns:1fr 2fr;transition:border-color .25s" onmouseenter="this.style.borderColor='rgba(212,255,51,.2)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.06)'">
+                    <div style="padding:2rem;background:var(--bg-3);border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between">
+                        <div>
+                            <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:1.25rem">Case_03</div>
+                            <div style="font-family:var(--font-d);font-size:3.5rem;font-weight:800;letter-spacing:-.04em;background:linear-gradient(135deg,var(--accent),#38bdf8);background-clip:text;-webkit-background-clip:text;color:transparent;line-height:1">O(log n)</div>
+                            <div style="font-family:var(--font-m);font-size:.72rem;color:var(--muted);margin-top:.4rem;letter-spacing:.04em">вместо O(n) × LLM</div>
+                        </div>
+                        <div style="margin-top:2rem">
+                            <div style="display:flex;flex-wrap:wrap;gap:.4rem">
+                                <span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:5px;padding:.2rem .65rem;font-family:var(--font-m);font-size:.65rem;color:var(--accent)">PageRank</span>
+                                <span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:5px;padding:.2rem .65rem;font-family:var(--font-m);font-size:.65rem;color:var(--accent)">Graph Search</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding:2rem">
+                        <h3 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;letter-spacing:-.015em;margin-bottom:1.5rem">PageRank вместо LLM: поиск по огромной базе без прогонов через модель</h3>
+                        <div style="display:flex;flex-direction:column;gap:1.1rem">
+                            <div style="display:flex;gap:1rem;align-items:flex-start">
+                                <div style="flex-shrink:0;width:28px;height:28px;background:#1a1f2a;border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center">
+                                    <i class="fas fa-fire" style="font-size:.7rem;color:var(--muted)"></i>
+                                </div>
+                                <div>
+                                    <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.3rem">Задача заказчика</div>
+                                    <p style="font-size:.875rem;color:var(--text);line-height:1.65">Интеллектуальный поиск по огромной базе данных. Предложенный подход — прогон каждого запроса через LLM для семантического матчинга. Стоимость и латентность — неприемлемые.</p>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:1rem;align-items:flex-start">
+                                <div style="flex-shrink:0;width:28px;height:28px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:7px;display:flex;align-items:center;justify-content:center">
+                                    <i class="fas fa-lightbulb" style="font-size:.7rem;color:var(--accent)"></i>
+                                </div>
+                                <div>
+                                    <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.3rem">Решение Cycleless</div>
+                                    <p style="font-size:.875rem;color:var(--text);line-height:1.65">Реализовали механизм на основе PageRank — граф связей между сущностями базы, ранжирование по весу узлов. LLM используется один раз при индексации, а не при каждом запросе.</p>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:1rem;align-items:flex-start">
+                                <div style="flex-shrink:0;width:28px;height:28px;background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:7px;display:flex;align-items:center;justify-content:center">
+                                    <i class="fas fa-chart-line" style="font-size:.7rem;color:var(--accent)"></i>
+                                </div>
+                                <div>
+                                    <div style="font-family:var(--font-m);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.3rem">Результат</div>
+                                    <p style="font-size:.875rem;color:var(--text);line-height:1.65">Поиск работает за миллисекунды при любом объёме базы. Стоимость запроса — нулевая. Релевантность — выше, чем у наивного LLM-матчинга, за счёт графовой семантики связей.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="comparison">
+        <div class="container">
+            <div class="sh">
+                <div class="lbl"><span>Сравнение с рынком</span></div>
+                <h2>Почему <span class="g">Cycleless</span></h2>
+            </div>
+            <div class="tw">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Критерий</th>
+                            <th style="color:var(--accent)">Cycleless</th>
+                            <th>Крупные интеграторы</th>
+                            <th>Бутик-агентства</th>
+                            <th>Коробочные SaaS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Фокус</td><td class="hl">Решение бизнес-боли (ROI)</td><td>Проектно-ориентированный</td><td>Технически-ориентированный</td><td>Функционально-ориентированный</td></tr>
+                        <tr><td>Ценовая модель</td><td class="hl">Фикс + SLA, скидки за связки</td><td>Почасовая, скрытые косты</td><td>Проектная, риск удорожания</td><td>Подписка + дорогая интеграция</td></tr>
+                        <tr><td>Гибкость</td><td class="hl">Модульная архитектура</td><td>Монолит, сложно менять</td><td>Ограничена стеком команды</td><td>Жёсткие рамки тарифа</td></tr>
+                        <tr><td>Ответственность</td><td class="hl">Гарантии, % от профита, SLA</td><td>Средняя (формальный SLA)</td><td>Низкая (нет гарантий)</td><td>Нулевая</td></tr>
+                        <tr><td>Сроки внедрения</td><td class="hl">Ядро за 2–4 недели</td><td>3–6+ месяцев</td><td>Зависят от загрузки</td><td>Мгновенно, без интеграции</td></tr>
+                        <tr><td>Поддержка</td><td class="hl">Ручная интеграция + SLA 24/7</td><td>Отдельный дорогой контракт</td><td>Часто на стороне клиента</td><td>Самостоятельная</td></tr>
+                        <tr><td>Измеримость</td><td class="hl">KPI встроен в каждый продукт</td><td>Требует отдельного проекта</td><td>Требует отдельного заказа</td><td>Базовая аналитика</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="background:var(--bg-3);border-radius:var(--r);padding:1.75rem;margin-top:1.5rem">
+                <div class="module-head" style="margin-bottom:1rem"><i class="fas fa-crown"></i> Причины выбрать Cycleless</div>
+                <div class="adv-g">
+                    <div class="adv"><i class="fas fa-check"></i><div><strong>Решение, а не процесс</strong><span>Вы покупаете результат</span></div></div>
+                    <div class="adv"><i class="fas fa-check"></i><div><strong>Результат, а не часы</strong><span>Оплата за KPI</span></div></div>
+                    <div class="adv"><i class="fas fa-check"></i><div><strong>LEGO-подход</strong><span>Система растёт с вами</span></div></div>
+                    <div class="adv"><i class="fas fa-check"></i><div><strong>Погружение в бизнес</strong><span>Не подрядчик, а партнёр</span></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="calculator">
+        <div class="container">
+            <div class="sh sh-c">
+                <div class="lbl"><span>Калькулятор</span></div>
+                <h2>Рассчитайте <span class="g">стоимость</span></h2>
+                <p>Выберите одно ядро и несколько модулей — цена обновится автоматически</p>
+            </div>
+            <div class="calc-panel" style="padding: 1.5rem">
+                <div class="calc-g" style="gap: 2rem">
+                    <div class="calc-in" style="padding: 0; border: none">
+                        <div class="field" style="margin-bottom: 2rem">
+                            <label style="display: block; margin-bottom: 1rem">⚛️ Ядро (выберите одно)</label>
+                            <div id="coreRadios" style="display: flex; flex-direction: column; gap: 0.75rem">
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_crm"> <span><strong>CRM-Реаниматор Light</strong> — 150 000 ₽ разово</span></label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_crm"> <span><strong>CRM-Реаниматор Стандарт</strong> — 150 000 ₽ + 20 000 ₽/мес</span></label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_xray"> <span><strong>Tech X-Ray Light</strong> — 50 000 ₽ разово</span></label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_xray"> <span><strong>Tech X-Ray Стандарт</strong> — 150 000 ₽ разово</span></label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_chaos"> <span><strong>Chaos Classifier Light</strong> — 0 ₽ + 45 000 ₽/мес</span></label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_chaos"> <span><strong>Chaos Classifier Стандарт</strong> — 80 000 ₽ + 25 000 ₽/мес</span></label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_nom"> <span><strong>Номенклатура Light</strong> — 30 000 ₽ + 35 000 ₽/мес</span></label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_nom"> <span><strong>Номенклатура Стандарт</strong> — 80 000 ₽ + 25 000 ₽/мес</span></label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="light_key"> <span><strong>Ключевое действие Light</strong> — 0 ₽ + 40 000 ₽/мес</span></label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="radio" name="core" value="std_key"> <span><strong>Ключевое действие Стандарт</strong> — 100 000 ₽ + 25 000 ₽/мес</span></label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer; background:rgba(212,255,51,0.04);padding:.3rem .5rem;border-radius:8px;border:1px solid rgba(212,255,51,0.15)"><input type="radio" name="core" value="light_agent"> <span><strong style="color:var(--accent)">Агентное ядро Light</strong> — 0 ₽ + 60 000 ₽/мес</span></label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer; background:rgba(212,255,51,0.04);padding:.3rem .5rem;border-radius:8px;border:1px solid rgba(212,255,51,0.15)"><input type="radio" name="core" value="std_agent"> <span><strong style="color:var(--accent)">Агентное ядро Стандарт</strong> — 200 000 ₽ + 35 000 ₽/мес</span></label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label style="display: block; margin-bottom: 1rem">🧩 Модули (выберите несколько)</label>
+                            <div id="modulesChecks" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.75rem">
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="ai_calls"> AI-Звонки · 60k + 30k/мес</label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="voice_ai"> Голосовой ИИ · 40k + 20k/мес</label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="docflow"> Документооборот · 80k + 35k/мес</label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="parsing_web"> Парсинг интернета · 50k + 25k/мес</label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="parsing_comp"> Парсинг конкурентов · 100k + 50k/мес</label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="video_gen"> Генерация видео · 70k + 40k/мес</label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="photo_gen"> Генерация фото · 40k + 20k/мес</label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="ai_check"> AI-Проверки · 80k + 45k/мес</label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="omni"> Мессенджеры Omni · 100k + 50k/мес</label>
+                                <label style="display: flex; align-items: center; gap: 0.6rem; cursor: pointer"><input type="checkbox" value="calendar"> Календари · 30k + 15k/мес</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="calc-out" style="background: var(--bg-2); border-radius: var(--rl); padding: 1.5rem">
+                        <div style="margin-bottom: 1.5rem">
+                            <div class="p-lbl">Сетап (разово)</div>
+                            <div class="p-val" id="setupPrice" style="font-size: 2rem">0 ₽</div>
+                        </div>
+                        <div class="divider" style="margin: 1rem 0"></div>
+                        <div style="margin-bottom: 1.5rem">
+                            <div class="p-lbl">Ежемесячный SLA</div>
+                            <div class="p-val" id="monthlyPrice" style="font-size: 2rem">0 ₽</div>
+                            <div class="p-bonus" id="bonusNote" style="display: none; margin-top: 0.5rem"><i class="fas fa-gift"></i> Первый месяц SLA бесплатно</div>
+                        </div>
+                        <div class="divider" style="margin: 1rem 0"></div>
+                        <p class="calc-hint" style="margin: 1rem 0; font-size: 0.75rem">Скидки: 1 модуль → −20% на сетап модуля, 2+ модуля → −15% на сетап каждого. Ядро + 3+ модуля → первый месяц SLA бесплатно.</p>
+                        <a href="https://t.me/cycleless" target="_blank" class="btn btn-p" style="width:100%; justify-content:center; margin-top: 0.5rem">
+                            <i class="fab fa-telegram"></i> Точный расчёт в Telegram
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ⭐ НОВЫЙ РАЗДЕЛ: О КОМПАНИИ -->
+    <section id="about" style="background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+        <div class="container">
+            <div class="sh sh-c">
+                <div class="lbl"><span>О компании</span></div>
+                <h2>Cycleless — <span class="g">инженерный AI-интегратор</span></h2>
+                <p>Мы не стартап с раундом. Мы — ИП с глубокой технической экспертизой и фокусом на результат.</p>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;max-width:900px;margin:0 auto">
+                <div class="card" style="text-align:center">
+                    <div class="card-ic" style="margin:0 auto 1rem"><i class="fas fa-user-tie"></i></div>
+                    <h3>Форма собственности</h3>
+                    <p style="font-size:.85rem;color:var(--muted);line-height:1.65">Индивидуальный предприниматель. Работаем официально, с договором, актами и закрывающими документами. Полная прозрачность расчётов.</p>
+                </div>
+                <div class="card" style="text-align:center">
+                    <div class="card-ic" style="margin:0 auto 1rem"><i class="fas fa-flask"></i></div>
+                    <h3>Подход</h3>
+                    <p style="font-size:.85rem;color:var(--muted);line-height:1.65">Не продаём хайп. Инженерная экспертиза, математические модели и правильный выбор технологии под задачу. Без переплат за модные буквы.</p>
+                </div>
+                <div class="card" style="text-align:center">
+                    <div class="card-ic" style="margin:0 auto 1rem"><i class="fas fa-handshake"></i></div>
+                    <h3>Ответственность</h3>
+                    <p style="font-size:.85rem;color:var(--muted);line-height:1.65">Каждый проект ведётся с персональной ответственностью. Не передаём младшим разработчикам. Вы общаетесь с тем, кто принимает решения.</p>
+                </div>
+            </div>
+
+            <div class="info" style="margin-top:2rem;max-width:700px;margin-left:auto;margin-right:auto">
+                <i class="fas fa-quote-right"></i>
+                <p><strong>Почему ИП — это плюс для клиента:</strong> никакой бюрократии, быстрое принятие решений, прямые договорённости без «согласования с руководством». Вы платите за результат, а не за содержание офиса и middle-менеджмента. Каждый рубль идёт в инженерию.</p>
+            </div>
+
+            <div style="text-align:center;margin-top:2rem">
+                <a href="https://t.me/cycleless" target="_blank" class="btn btn-s"><i class="fab fa-telegram"></i> Связаться напрямую</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="foot-i">
+            <div style="display:flex;align-items:center;gap:.7rem">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="6" fill="#050806" />
+                    <path d="M16 5L25.5 10.5V21.5L16 27L6.5 21.5V10.5L16 5Z" stroke="#D4FF33" stroke-width="2" stroke-linejoin="round" />
+                    <path d="M16 5V16L25.5 21.5M16 16L6.5 22M16 27V16L25.5 10.5M16 16L6.5 10.5" stroke="#D4FF33" stroke-width="1.2" opacity="0.9" />
+                    <circle cx="16" cy="16" r="1.5" fill="#D4FF33" />
+                </svg>
+                <span style="font-family:var(--font-d);font-size:1.05rem;font-weight:700;color:var(--muted)">Cycleless</span>
+            </div>
+            <div class="foot-links">
+                <a href="https://t.me/cycleless" target="_blank"><i class="fab fa-telegram"></i> @cycleless</a>
+                <a href="privacy.html"><i class="fas fa-shield-halved"></i> Политика конфиденциальности</a>
+                <a href="terms.html"><i class="fas fa-file-contract"></i> Договор оферты</a>
+            </div>
+            <div class="foot-copy">
+                Cycleless — решаем нерешаемое автоматизациями и отказоустойчивыми AI-решениями<br>
+                ИП. Все права защищены.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const coreMap = {
+            light_crm: { setup: 150000, monthly: 0 },
+            std_crm: { setup: 150000, monthly: 20000 },
+            light_xray: { setup: 50000, monthly: 0 },
+            std_xray: { setup: 150000, monthly: 0 },
+            light_chaos: { setup: 0, monthly: 45000 },
+            std_chaos: { setup: 80000, monthly: 25000 },
+            light_nom: { setup: 30000, monthly: 35000 },
+            std_nom: { setup: 80000, monthly: 25000 },
+            light_key: { setup: 0, monthly: 40000 },
+            std_key: { setup: 100000, monthly: 25000 },
+            light_agent: { setup: 0, monthly: 60000 },
+            std_agent: { setup: 200000, monthly: 35000 }
+        };
+        const modMap = {
+            ai_calls: { setup: 60000, monthly: 30000 },
+            voice_ai: { setup: 40000, monthly: 20000 },
+            docflow: { setup: 80000, monthly: 35000 },
+            parsing_web: { setup: 50000, monthly: 25000 },
+            parsing_comp: { setup: 100000, monthly: 50000 },
+            video_gen: { setup: 70000, monthly: 40000 },
+            photo_gen: { setup: 40000, monthly: 20000 },
+            ai_check: { setup: 80000, monthly: 45000 },
+            omni: { setup: 100000, monthly: 50000 },
+            calendar: { setup: 30000, monthly: 15000 }
+        };
+
+        function fmt(n) { return n.toLocaleString('ru-RU') + ' ₽' }
+
+        function calc() {
+            let coreVal = null;
+            const radioSelected = document.querySelector('input[name="core"]:checked');
+            if (radioSelected) coreVal = radioSelected.value;
+            const core = coreVal && coreMap[coreVal] ? coreMap[coreVal] : { setup: 0, monthly: 0 };
+
+            const mods = [];
+            document.querySelectorAll('#modulesChecks input[type="checkbox"]:checked').forEach(cb => {
+                if (modMap[cb.value]) mods.push(modMap[cb.value]);
+            });
+            const n = mods.length;
+            const disc = n === 1 ? 0.2 : (n >= 2 ? 0.15 : 0);
+            let ts = core.setup,
+                tm = core.monthly;
+            for (const m of mods) {
+                ts += Math.floor(m.setup * (1 - disc));
+                tm += m.monthly;
+            }
+            document.getElementById('setupPrice').textContent = fmt(ts);
+            document.getElementById('monthlyPrice').textContent = fmt(tm);
+            const bonusNote = document.getElementById('bonusNote');
+            if (coreVal && n >= 3) bonusNote.style.display = 'block';
+            else bonusNote.style.display = 'none';
+        }
+
+        document.querySelectorAll('input[name="core"], #modulesChecks input[type="checkbox"]').forEach(el => {
+            el.addEventListener('change', calc);
+        });
+        calc();
+    </script>
 </body>
 </html>
