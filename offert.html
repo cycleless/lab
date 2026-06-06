@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Публичная оферта — Cycleless</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --accent: #d4ff33;
+        --accent-dim: rgba(212, 255, 51, 0.08);
+        --accent-border: rgba(212, 255, 51, 0.2);
+        --bg: #07080a;
+        --bg-2: #0c0f13;
+        --bg-3: #111620;
+        --border: rgba(255, 255, 255, 0.06);
+        --text: #dde4ec;
+        --muted: #5a6a7a;
+        --dim: #2e3a48;
+        --font-d: "Syne", sans-serif;
+        --font-b: "DM Sans", sans-serif;
+        --font-m: "JetBrains Mono", monospace;
+        --r: 16px;
+        --rl: 24px;
+      }
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        font-family: var(--font-b);
+        color: var(--text);
+        line-height: 1.7;
+        -webkit-font-smoothing: antialiased;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(212, 255, 51, 0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(212, 255, 51, 0.02) 1px, transparent 1px);
+        background-size: 64px 64px;
+        pointer-events: none;
+        z-index: 0;
+      }
+      /* NAV */
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(7, 8, 10, 0.92);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+      }
+      .nav-i {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.95rem 1.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        text-decoration: none;
+      }
+      .logo-m {
+        width: 34px;
+        height: 34px;
+        background: var(--bg-3);
+        border: 1px solid var(--accent-border);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .logo-t {
+        font-family: var(--font-d);
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.02em;
+      }
+      .logo-t span {
+        color: var(--accent);
+      }
+      .nav-back {
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-decoration: none;
+        padding: 0.4rem 0.85rem;
+        border-radius: 40px;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .nav-back:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      /* MAIN CONTENT */
+      main {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem 5rem;
+        position: relative;
+        z-index: 1;
+      }
+      .page-header {
+        text-align: center;
+        margin-bottom: 3.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .page-header .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--bg-3);
+        border: 1px solid var(--accent-border);
+        border-radius: 40px;
+        padding: 0.3rem 1rem;
+        font-family: var(--font-m);
+        font-size: 0.68rem;
+        color: var(--accent);
+        letter-spacing: 0.08em;
+        margin-bottom: 1.5rem;
+      }
+      .page-header h1 {
+        font-family: var(--font-d);
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        margin-bottom: 0.75rem;
+      }
+      .page-header .sub {
+        font-size: 0.9rem;
+        color: var(--muted);
+        font-family: var(--font-m);
+        letter-spacing: 0.04em;
+      }
+
+      /* OFFERTA SECTIONS */
+      .offer-section {
+        margin-bottom: 2.5rem;
+      }
+      .offer-section h2 {
+        font-family: var(--font-d);
+        font-size: 1.35rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+      .offer-section h2 .num {
+        font-family: var(--font-m);
+        font-size: 0.72rem;
+        color: var(--accent);
+        background: var(--accent-dim);
+        border: 1px solid var(--accent-border);
+        border-radius: 6px;
+        padding: 0.15rem 0.6rem;
+        letter-spacing: 0.06em;
+        flex-shrink: 0;
+      }
+      .offer-section p {
+        font-size: 0.9rem;
+        color: var(--muted);
+        line-height: 1.8;
+        margin-bottom: 0.85rem;
+      }
+      .offer-section p strong {
+        color: var(--text);
+        font-weight: 500;
+      }
+      .offer-section ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0.85rem 0 1.2rem;
+      }
+      .offer-section ul li {
+        font-size: 0.88rem;
+        color: var(--muted);
+        line-height: 1.75;
+        padding: 0.3rem 0 0.3rem 1.6rem;
+        position: relative;
+      }
+      .offer-section ul li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.8rem;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        opacity: 0.5;
+      }
+      .offer-section .highlight-box {
+        background: var(--bg-3);
+        border: 1px solid var(--accent-border);
+        border-radius: var(--r);
+        padding: 1.2rem 1.5rem;
+        margin: 1.2rem 0;
+      }
+      .offer-section .highlight-box p {
+        font-size: 0.85rem;
+        color: var(--text);
+        margin-bottom: 0;
+      }
+      .offer-section .highlight-box p strong {
+        color: var(--accent);
+      }
+
+      /* TABLE */
+      .tw {
+        overflow-x: auto;
+        border-radius: var(--rl);
+        border: 1px solid var(--border);
+        margin: 1.2rem 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--bg-2);
+      }
+      thead th {
+        background: var(--bg-3);
+        font-family: var(--font-m);
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--accent);
+        padding: 0.85rem 1.25rem;
+        text-align: left;
+        font-weight: 500;
+        border-bottom: 1px solid var(--border);
+      }
+      tbody td {
+        padding: 0.8rem 1.25rem;
+        font-size: 0.83rem;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.01);
+      }
+
+      /* REQ TABLE */
+      .req-table {
+        background: var(--bg-2);
+        border: 1px solid var(--border);
+        border-radius: var(--rl);
+        overflow: hidden;
+        margin: 1.2rem 0;
+      }
+      .req-row {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        border-bottom: 1px solid var(--border);
+      }
+      .req-row:last-child {
+        border-bottom: none;
+      }
+      .req-label {
+        padding: 0.9rem 1.25rem;
+        font-family: var(--font-m);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--accent);
+        background: var(--bg-3);
+        display: flex;
+        align-items: center;
+      }
+      .req-value {
+        padding: 0.9rem 1.25rem;
+        font-size: 0.85rem;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+      }
+      .req-value span {
+        color: var(--muted);
+        font-size: 0.78rem;
+        margin-left: 0.4rem;
+      }
+
+      .g {
+        background: linear-gradient(
+          135deg,
+          var(--accent) 0%,
+          #a78bfa 55%,
+          #38bdf8 100%
+        );
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 2rem 0;
+      }
+
+      /* FOOTER */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 2rem 1.5rem;
+        text-align: center;
+      }
+      .foot-copy {
+        font-family: var(--font-m);
+        font-size: 0.7rem;
+        color: var(--dim);
+        letter-spacing: 0.03em;
+        line-height: 1.85;
+      }
+
+      @media (max-width: 600px) {
+        main {
+          padding: 2rem 1rem 3rem;
+        }
+        .req-row {
+          grid-template-columns: 1fr;
+        }
+        .req-label {
+          border-bottom: 1px solid var(--border);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-i">
+        <a href="/" class="logo">
+          <div class="logo-m">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 32 32"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="32" height="32" rx="6" fill="#050806" />
+              <path
+                d="M16 5L25.5 10.5V21.5L16 27L6.5 21.5V10.5L16 5Z"
+                stroke="#D4FF33"
+                stroke-width="2"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M16 5V16L25.5 21.5M16 16L6.5 22M16 27V16L25.5 10.5M16 16L6.5 10.5"
+                stroke="#D4FF33"
+                stroke-width="1.2"
+                opacity="0.9"
+              />
+              <circle cx="16" cy="16" r="1.5" fill="#D4FF33" />
+            </svg>
+          </div>
+          <span class="logo-t">Cycle<span>less</span></span>
+        </a>
+        <a href="/" class="nav-back"
+          ><i class="fas fa-arrow-left"></i> На главную</a
+        >
+      </div>
+    </nav>
+
+    <main>
+      <div class="page-header">
+        <div class="badge">
+          <i class="fas fa-file-contract"></i> Ред. от 01.06.2026
+        </div>
+        <h1>Публичная <span class="g">оферта</span></h1>
+        <p class="sub">
+          Договор возмездного оказания услуг по разработке, внедрению и
+          сопровождению AI-решений
+        </p>
+      </div>
+
+      <div class="offer-section">
+        <h2><span class="num">1</span> Термины и определения</h2>
+        <p>
+          <strong>Исполнитель</strong> — Индивидуальный предприниматель,
+          осуществляющий деятельность под брендом Cycleless.
+        </p>
+        <p>
+          <strong>Заказчик</strong> — любое дееспособное физическое лицо,
+          индивидуальный предприниматель или юридическое лицо, акцептовавшее
+          настоящую оферту.
+        </p>
+        <p>
+          <strong>Продукт</strong> — программное решение, состоящее из Ядра
+          и/или Модулей, описанных на Сайте Исполнителя. Каждый Продукт имеет
+          фиксированную стоимость сетапа и ежемесячного сопровождения (SLA).
+        </p>
+        <p>
+          <strong>Сетап</strong> — разовые работы по развёртыванию, настройке и
+          интеграции Продукта в инфраструктуру Заказчика.
+        </p>
+        <p>
+          <strong>SLA (Service Level Agreement)</strong> — ежемесячное
+          сопровождение, включающее поддержание работоспособности Продукта,
+          исправление ошибок, обновления и консультации в рамках выбранного
+          тарифа.
+        </p>
+        <p>
+          <strong>Акцепт оферты</strong> — полное и безоговорочное принятие
+          условий настоящего Договора, совершаемое путём оплаты счёта
+          Исполнителя.
+        </p>
+      </div>
+
+      <div class="offer-section">
+        <h2><span class="num">2</span> Предмет договора</h2>
+        <p>
+          2.1. Исполнитель обязуется оказать Заказчику услуги по разработке,
+          внедрению и сопровождению AI-решений (Продуктов) в соответствии с
+          выбранным Заказчиком тарифным планом, а Заказчик обязуется принять и
+          оплатить эти услуги.
+        </p>
+        <p>
+          2.2. Конкретный перечень Продуктов, их состав (Ядро, Модули),
+          стоимость сетапа и SLA, а также сроки выполнения работ согласовываются
+          Сторонами в переписке (Telegram, email) и фиксируются в счёте на
+          оплату.
+        </p>
+        <p>
+          2.3. Исполнитель вправе привлекать третьих лиц для оказания услуг без
+          дополнительного согласования с Заказчиком, оставаясь ответственным за
+          результат.
+        </p>
+      </div>
+
+      <div class="offer-section">
+        <h2><span class="num">3</span> Порядок оказания услуг</h2>
+        <p>
+          3.1. Заказчик направляет Исполнителю запрос с описанием потребности
+          через Telegram-канал <strong>@cycleless</strong> или иной
+          согласованный канал связи.
+        </p>
+        <p>
+          3.2. Исполнитель анализирует запрос, при необходимости проводит
+          бесплатную консультацию и выставляет счёт с указанием состава
+          Продукта, стоимости сетапа, стоимости SLA и сроков.
+        </p>
+        <p>
+          3.3. Услуги считаются заказанными с момента оплаты Заказчиком
+          выставленного счёта. С этого момента настоящий Договор считается
+          заключённым.
+        </p>
+        <p>
+          3.4. Срок начала работ по сетапу исчисляется с даты поступления оплаты
+          на расчётный счёт Исполнителя и предоставления Заказчиком всех
+          необходимых доступов и информации.
+        </p>
+        <p>3.5. Типовые сроки выполнения сетапа:</p>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>Продукт</th>
+                <th>Срок сетапа</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CRM‑Реаниматор</td>
+                <td>5–10 рабочих дней</td>
+              </tr>
+              <tr>
+                <td>Tech X‑Ray</td>
+                <td>3–7 рабочих дней</td>
+              </tr>
+              <tr>
+                <td>Chaos Classifier</td>
+                <td>7–14 рабочих дней</td>
+              </tr>
+              <tr>
+                <td>Номенклатура</td>
+                <td>5–10 рабочих дней</td>
+              </tr>
+              <tr>
+                <td>Ключевое действие</td>
+                <td>5–10 рабочих дней</td>
+              </tr>
+              <tr>
+                <td>Агентное ядро</td>
+                <td>10–20 рабочих дней</td>
+              </tr>
+              <tr>
+                <td>Custom Greenfield</td>
+                <td>Определяется индивидуально</td>
+              </tr>
+              <tr>
+                <td>Подключение Модуля к действующему Ядру</td>
+                <td>3–10 рабочих дней</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          3.6. По завершении сетапа Исполнитель проводит демонстрацию
+          работающего Продукта. Заказчик обязан принять результат в течение 3
+          (трёх) рабочих дней либо предоставить мотивированный отказ с перечнем
+          несоответствий согласованному заданию.
+        </p>
+        <p>
+          3.7. С момента приёмки сетапа начинается период SLA-сопровождения. SLA
+          включает:
+        </p>
+        <ul>
+          <li>
+            поддержание работоспособности Продукта в режиме 24/7 с целевым
+            показателем доступности 99.5%;
+          </li>
+          <li>исправление ошибок, возникших не по вине Заказчика;</li>
+          <li>
+            консультации по использованию Продукта в рабочее время (10:00–19:00
+            МСК, будни);
+          </li>
+          <li>обновление Продукта в рамках минорных версий.</li>
+        </ul>
+      </div>
+
+      <div class="offer-section">
+        <h2><span class="num">4</span> Стоимость услуг и порядок расчётов</h2>
+        <p>
+          4.1. Стоимость услуг определяется действующими тарифами,
+          опубликованными на Сайте Исполнителя на момент выставления счёта.
+        </p>
+        <p>4.2. Базовая стоимость Ядер и Модулей:</p>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>Продукт</th>
+                <th>Light — быстрый вход</th>
+                <th>Стандарт — долгосрок</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CRM‑Реаниматор</td>
+                <td>150 000 ₽ разово</td>
+                <td>150 000 ₽ + 20 000 ₽/мес</td>
+              </tr>
+              <tr>
+                <td>Tech X‑Ray</td>
+                <td>50 000 ₽ разово</td>
+                <td>150 000 ₽ разово</td>
+              </tr>
+              <tr>
+                <td>Chaos Classifier</td>
+                <td>0 ₽ + 45 000 ₽/мес</td>
+                <td>80 000 ₽ + 25 000 ₽/мес</td>
+              </tr>
+              <tr>
+                <td>Номенклатура</td>
+                <td>30 000 ₽ + 35 000 ₽/мес</td>
+                <td>80 000 ₽ + 25 000 ₽/мес</td>
+              </tr>
+              <tr>
+                <td>Ключевое действие</td>
+                <td>0 ₽ + 40 000 ₽/мес</td>
+                <td>100 000 ₽ + 25 000 ₽/мес</td>
+              </tr>
+              <tr>
+                <td>Агентное ядро</td>
+                <td>0 ₽ + 60 000 ₽/мес</td>
+                <td>200 000 ₽ + 35 000 ₽/мес</td>
+              </tr>
+              <tr>
+                <td>Custom Greenfield</td>
+                <td>Discovery — 200 000 ₽</td>
+                <td>MVP от 500 000 ₽</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          4.3. Стоимость Модулей определяется таблицей на Сайте. При заказе
+          связки Ядро + Модули применяются скидки:
+        </p>
+        <ul>
+          <li>Ядро + 1 Модуль → скидка 20% на сетап Модуля;</li>
+          <li>Ядро + 2 и более Модуля → скидка 15% на сетап каждого Модуля;</li>
+          <li>
+            Ядро + 3 и более Модуля → первый месяц SLA на Модули — бесплатно.
+          </li>
+        </ul>
+        <p>
+          4.4. Оплата производится в российских рублях безналичным переводом на
+          расчётный счёт Исполнителя. Все цены указаны без НДС (Исполнитель
+          применяет специальный налоговый режим).
+        </p>
+        <p>
+          4.5. Ежемесячный платёж за SLA списывается не позднее 5-го числа
+          каждого оплачиваемого месяца. Первый платёж за SLA — с месяца,
+          следующего за приёмкой сетапа (если иное не предусмотрено тарифом или
+          акцией).
+        </p>
+      </div>
+
+      <div class="offer-section">
+        <h2><span class="num">5</span> Права и обязанности сторон</h2>
+        <p><strong>5.1. Исполнитель обязуется:</strong></p>
+        <ul>
+          <li>оказать услуги качественно и в согласованные сроки;</li>
+          <li>соблюдать конфиденциальность информации Заказчика;</li>
+          <li>
+            не передавать данные Заказчика третьим лицам без его согласия, за
+            исключением случаев, предусмотренных законодательством РФ;
+          </li>
+          <li>
+            поддерживать Продукт в работоспособном состоянии в рамках
+            оплаченного SLA;
+          </li>
+          <li>информировать Заказчика о ходе работ по запросу.</li>
+        </ul>
+        <p><strong>5.2. Заказчик обязуется:</strong></p>
+        <ul>
+          <li>
+            предоставить Исполнителю полную и достоверную информацию,
+            необходимую для оказания услуг;
+          </li>
+          <li>
+            своевременно предоставить доступы к системам, API, хостингу и иным
+            ресурсам, необходимым для развёртывания Продукта;
+          </li>
+          <li>своевременно оплачивать услуги Исполнителя;</li>
+          <li>не использовать Продукт для противоправной деятельности;</li>
+          <li>
+            не предпринимать попыток обратной разработки (reverse engineering)
+            Продукта, если иное не согласовано письменно.
+          </li>
+        </ul>
+        <p><strong>5.3. Исполнитель вправе:</strong></p>
+        <ul>
+          <li>
+            приостановить оказание услуг при просрочке оплаты более чем на 10
+            (десять) календарных дней;
+          </li>
+          <li>
+            отказаться от исполнения Договора в одностороннем порядке, уведомив
+            Заказчика за 14 (четырнадцать) календарных дней, с возвратом
+            неотработанного остатка средств;
+          </li>
+          <li>
+            использовать обезличенные данные о работе Продукта для улучшения
+            алгоритмов.
+          </li>
+        </ul>
+      </div>
+
+      <div class="offer-section">
+        <h2><span class="num">6</span> Интеллектуальная собственность</h2>
+        <p>
+          6.1. Исключительные права на Продукт, его исходный код, алгоритмы,
+          архитектуру и документацию принадлежат Исполнителю.
+        </p>
+        <p>
+          6.2. Заказчику предоставляется неисключительная, непередаваемая
+          лицензия на использование Продукта в пределах функционала,
+          предусмотренного тарифом, на срок действия Договора.
+        </p>
+        <p>
+          6.3. Данные Заказчика, обработанные Продуктом, являются собственностью
+          Заказчика. Исполнитель не вправе использовать их иначе как для
+          исполнения обязательств по Договору.
+        </p>
+        <p>
+          6.4. По запросу Заказчика и за отдельную плату Стороны могут заключить
+          договор отчуждения исключительного права на Продукт или его часть.
+          Условия обсуждаются индивидуально.
+        </p>
+      </div>
+
+      <div class="offer-section">
+        <h2>
+          <span class="num">7</span> Конфиденциальность и персональные данные
+        </h2>
+        <p>
+          7.1. Стороны обязуются сохранять конфиденциальность информации,
+          полученной друг от друга в ходе исполнения Договора, в течение всего
+          срока действия Договора и 3 (трёх) лет после его прекращения.
+        </p>
+        <p>
+          7.2. Исполнитель обрабатывает персональные данные Заказчика (ФИО,
+          контактные данные, платёжные реквизиты) исключительно в целях
+          исполнения Договора. Обработка осуществляется в соответствии с
+          Политикой конфиденциальности, размещённой на Сайте.
+        </p>
+      </div>
+
+      <div class="offer-section">
+        <h2><span class="num">8</span> Ответственность сторон</h2>
+        <p>
+          8.1. За неисполнение или ненадлежащее исполнение обязательств Стороны
+          несут ответственность в соответствии с законодательством РФ.
+        </p>
+        <p>
+          8.2. Исполнитель несёт ответственность за работоспособность Продукта в
+          рамках оплаченного SLA. В случае нарушения целевого показателя
+          доступности (менее 99.5% в месяц) Исполнитель предоставляет скидку 15%
+          на SLA следующего месяца.
+        </p>
+        <p>8.3. Исполнитель <strong>не несёт ответственности</strong> за:</p>
+        <ul>
+          <li>
+            невозможность оказания услуг по причинам, зависящим от Заказчика
+            (непредоставление доступов, информации);
+          </li>
+          <li>качество данных, предоставленных Заказчиком;</li>
+          <li>
+            результаты, полученные Заказчиком с использованием Продукта,
+            выходящие за пределы прямого функционала;
+          </li>
+          <li>
+            перебои в работе сторонних сервисов (API, хостинг-провайдеры,
+            мессенджеры), на которые Исполнитель не может повлиять.
+          </li>
+        </ul>
+        <p>
+          8.4. Совокупная ответственность Исполнителя по Договору ограничена
+          суммой, уплаченной Заказчиком за последние 3 (три) месяца.
+        </p>
+        <div class="highlight-box">
+          <p>
+            <strong>Важно:</strong> Исполнитель не даёт гарантий достижения
+            Заказчиком конкретных бизнес-показателей (выручка, конверсия,
+            количество лидов), если такие KPI прямо не зафиксированы в
+            дополнительном соглашении к Договору.
+          </p>
+        </div>
+      </div>
+
+      <div class="offer-section">
+        <h2><span class="num">9</span> Срок действия и расторжение</h2>
+        <p>
+          9.1. Настоящий Договор вступает в силу с момента акцепта оферты и
+          действует до полного исполнения Сторонами обязательств.
+        </p>
+        <p>
+          9.2. Минимальный срок SLA-сопровождения для каждого Продукта указан в
+          тарифах на Сайте. Досрочное расторжение SLA-периода Заказчиком не
+          освобождает от оплаты оставшихся месяцев минимального срока.
+        </p>
+        <p>
+          9.3. По истечении минимального срока SLA Договор автоматически
+          продлевается на следующие 1 (один) месяц, если ни одна из Сторон не
+          уведомила другую о расторжении за 10 (десять) календарных дней до
+          окончания текущего месяца.
+        </p>
+        <p>
+          9.4. Заказчик вправе в любой момент отказаться от услуг, уведомив
+          Исполнителя письменно. При этом:
+        </p>
+        <ul>
+          <li>оплата за произведённый сетап не возвращается;</li>
+          <li>SLA оплачивается за полный текущий месяц;</li>
+          <li>
+            если не истёк минимальный срок SLA, Заказчик оплачивает оставшиеся
+            месяцы в размере 50% от стоимости SLA за каждый месяц.
+          </li>
+        </ul>
+        <p>
+          9.5. Исполнитель вправе расторгнуть Договор в одностороннем порядке в
+          случаях, предусмотренных п. 5.3 настоящего Договора, или при нарушении
+          Заказчиком условий использования Продукта.
+        </p>
+      </div>
+
+      <div class="offer-section">
+        <h2><span class="num">10</span> Разрешение споров</h2>
+        <p>
+          10.1. Все споры и разногласия Стороны стремятся урегулировать путём
+          переговоров. Срок ответа на претензию — 10 (десять) рабочих дней.
+        </p>
+        <p>
+          10.2. При невозможности урегулирования спор передаётся на рассмотрение
+          суда по месту регистрации Исполнителя.
+        </p>
+        <p>10.3. Применимое право — законодательство Российской Федерации.</p>
+      </div>
+
+      <div class="offer-section">
+        <h2><span class="num">11</span> Заключительные положения</h2>
+        <p>
+          11.1. Настоящая оферта является публичной и действует бессрочно, пока
+          не будет заменена новой редакцией.
+        </p>
+        <p>
+          11.2. Исполнитель вправе в одностороннем порядке вносить изменения в
+          текст оферты. Новая редакция вступает в силу с момента публикации на
+          Сайте, если иное не указано в тексте изменений.
+        </p>
+        <p>
+          11.3. Для действующих Заказчиков, заключивших Договор до публикации
+          новой редакции, продолжает действовать редакция, актуальная на момент
+          акцепта, если Стороны не договорились об ином.
+        </p>
+        <p>
+          11.4. Признание отдельных положений Договора недействительными не
+          влечёт недействительности Договора в целом.
+        </p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="offer-section">
+        <h2><span class="num">12</span> Реквизиты Исполнителя</h2>
+        <div class="req-table">
+          <div class="req-row">
+            <div class="req-label">Бренд</div>
+            <div class="req-value">Cycleless</div>
+          </div>
+          <div class="req-row">
+            <div class="req-label">Форма</div>
+            <div class="req-value">Индивидуальный предприниматель</div>
+          </div>
+          <div class="req-row">
+            <div class="req-label">ИНН</div>
+            <div class="req-value">
+              Уточняется при выставлении счёта
+              <span
+                >(предоставляется Заказчику в составе платёжных
+                документов)</span
+              >
+            </div>
+          </div>
+          <div class="req-row">
+            <div class="req-label">ОГРНИП</div>
+            <div class="req-value">Уточняется при выставлении счёта</div>
+          </div>
+          <div class="req-row">
+            <div class="req-label">Банк</div>
+            <div class="req-value">
+              Реквизиты расчётного счёта предоставляются в счёте на оплату
+            </div>
+          </div>
+          <div class="req-row">
+            <div class="req-label">Связь</div>
+            <div class="req-value">
+              <a
+                href="https://t.me/cycleless"
+                style="color: var(--accent); text-decoration: none"
+                >t.me/cycleless</a
+              >
+              — основной канал коммуникации
+            </div>
+          </div>
+          <div class="req-row">
+            <div class="req-label">Email</div>
+            <div class="req-value">Уточняется при контакте в Telegram</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 3rem">
+        <a
+          href="/"
+          class="btn"
+          style="
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.75rem;
+            border-radius: 40px;
+            font-family: var(--font-b);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            color: var(--text);
+            background: transparent;
+            transition: all 0.2s;
+          "
+        >
+          <i class="fas fa-arrow-left"></i> Вернуться на главную
+        </a>
+      </div>
+    </main>
+
+    <footer>
+      <div class="foot-copy">
+        Cycleless &copy; 2026. Индивидуальный предприниматель. Все права
+        защищены.<br />
+        Публичная оферта. Редакция от 01.06.2026.
+      </div>
+    </footer>
+  </body>
+</html>
