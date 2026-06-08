@@ -878,6 +878,14 @@
         .nav-links {
           display: none;
         }
+        /* Кейсы на телефоне: вертикальная верстка */
+        #cases > .container > div > div {
+          grid-template-columns: 1fr !important;
+        }
+        #cases > .container > div > div > div:first-child {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
       }
     </style>
   </head>
